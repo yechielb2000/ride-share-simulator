@@ -4,4 +4,4 @@ kafka:
 
 producer:
   json_file: "rides.json"
-  sim_speed: 60
+  sim_speed: 3
