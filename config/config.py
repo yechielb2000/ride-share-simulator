@@ -9,6 +9,12 @@ class KafkaConfig(BaseSettings):
     rides_topic: str
 
 
+class RedisConfig(BaseSettings):
+    host: str = "redis"
+    port: int = 6379
+    db: int = 0
+
+
 class RidesProducerConfig(BaseSettings):
     json_file: Path
     sim_speed: float = 60.0  # NOTE: 1 real second = 1 simulated minute
@@ -16,6 +22,7 @@ class RidesProducerConfig(BaseSettings):
 
 class AppConfig(BaseSettings):
     kafka: KafkaConfig
+    redis: RedisConfig
     rides_producer: RidesProducerConfig
 
     @classmethod
@@ -30,6 +37,7 @@ class AppConfig(BaseSettings):
 
         return cls(
             kafka=KafkaConfig(**cfg["kafka"]),
+            redis=RedisConfig(**cfg["redis"]),
             rides_producer=RidesProducerConfig(**cfg["rides_producer"])
         )
 
