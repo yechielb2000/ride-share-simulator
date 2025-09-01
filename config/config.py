@@ -1,23 +1,22 @@
 from pathlib import Path
 
 import yaml
-from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
 class KafkaConfig(BaseSettings):
-    bootstrap_servers: str = Field(..., env="KAFKA_BOOTSTRAP")
-    topic: str = Field(..., env="KAFKA_TOPIC")
+    bootstrap_servers: str
+    rides_topic: str
 
 
-class ProducerConfig(BaseSettings):
-    json_file: Path = Field(..., env="PRODUCER_JSON_FILE")
-    sim_speed: float = Field(60.0, env="SIM_SPEED")  # NOTE: 1 real second = 1 simulated minute
+class RidesProducerConfig(BaseSettings):
+    json_file: Path
+    sim_speed: float = 60.0  # NOTE: 1 real second = 1 simulated minute
 
 
 class AppConfig(BaseSettings):
     kafka: KafkaConfig
-    producer: ProducerConfig
+    rides_producer: RidesProducerConfig
 
     @classmethod
     def from_yaml(cls, filename: str = "config.yaml"):
@@ -31,8 +30,8 @@ class AppConfig(BaseSettings):
 
         return cls(
             kafka=KafkaConfig(**cfg["kafka"]),
-            producer=ProducerConfig(**cfg["producer"])
+            rides_producer=RidesProducerConfig(**cfg["rides_producer"])
         )
 
 
-config = AppConfig.from_yaml()
+config: AppConfig = AppConfig.from_yaml()
