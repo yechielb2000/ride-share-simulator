@@ -9,7 +9,7 @@
 
 **Dispatcher(s)**:
   >Consumes ride_requests from Kafka
-  Checks ride.timestamp <= sim_clock
+  Checks `ride.timestamp <= sim_clock`
   Assigns drivers using strategy
   Updates driver state in Redis
   Publishes assignment to Kafka assignments
