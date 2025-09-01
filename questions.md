@@ -1,0 +1,1 @@
+- what to do if the matching strategies do not satisfy the current ride. how to not get starvation.
