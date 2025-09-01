@@ -1,0 +1,81 @@
+{
+  "drivers": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "vehicle_type": "private",
+      "location": {"lat": 32.0853, "lon": 34.7818},
+      "rating": 4.9
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "vehicle_type": "suv",
+      "location": {"lat": 32.0800, "lon": 34.7800},
+      "rating": 4.7
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "vehicle_type": "private",
+      "location": {"lat": 32.0900, "lon": 34.7700},
+      "rating": 4.8
+    },
+    {
+      "id": 4,
+      "name": "Diana",
+      "vehicle_type": "suv",
+      "location": {"lat": 32.0750, "lon": 34.7900},
+      "rating": 4.6
+    },
+    {
+      "id": 5,
+      "name": "Ethan",
+      "vehicle_type": "private",
+      "location": {"lat": 32.0880, "lon": 34.7820},
+      "rating": 4.5
+    }
+  ],
+  "rides": [
+    {
+      "id": 1,
+      "pickup": {"lat": 32.0830, "lon": 34.7805},
+      "dropoff": {"lat": 32.0950, "lon": 34.7850},
+      "vehicle_type": "private",
+      "timestamp": "2025-09-01T10:00:00",
+      "user_rating": 5
+    },
+    {
+      "id": 2,
+      "pickup": {"lat": 32.0810, "lon": 34.7790},
+      "dropoff": {"lat": 32.0920, "lon": 34.7760},
+      "vehicle_type": "suv",
+      "timestamp": "2025-09-01T10:05:00",
+      "user_rating": 4
+    },
+    {
+      "id": 3,
+      "pickup": {"lat": 32.0860, "lon": 34.7830},
+      "dropoff": {"lat": 32.0910, "lon": 34.7890},
+      "vehicle_type": "private",
+      "timestamp": "2025-09-01T10:10:00",
+      "user_rating": 5
+    },
+    {
+      "id": 4,
+      "pickup": {"lat": 32.0780, "lon": 34.7810},
+      "dropoff": {"lat": 32.0890, "lon": 34.7720},
+      "vehicle_type": "suv",
+      "timestamp": "2025-09-01T10:15:00",
+      "user_rating": 3
+    },
+    {
+      "id": 5,
+      "pickup": {"lat": 32.0870, "lon": 34.7790},
+      "dropoff": {"lat": 32.0930, "lon": 34.7800},
+      "vehicle_type": "private",
+      "timestamp": "2025-09-01T10:20:00",
+      "user_rating": 4
+    }
+  ]
+}
