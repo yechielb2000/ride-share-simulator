@@ -17,7 +17,7 @@ class RedisConfig(BaseSettings):
 
 class RidesProducerConfig(BaseSettings):
     json_file: Path
-    sim_speed: float = 60.0 # probably shoudl delete that
+    sim_speed: float = 60.0 # probably should delete that
 
 
 class AppConfig(BaseSettings):
