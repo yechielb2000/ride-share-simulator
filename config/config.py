@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class KafkaConfig(BaseSettings):
-    bootstrap_servers: str
+    bootstrap_servers: str = "localhost:9092"
     rides_topic: str
 
 
@@ -17,7 +17,7 @@ class RedisConfig(BaseSettings):
 
 class RidesProducerConfig(BaseSettings):
     json_file: Path
-    sim_speed: float = 60.0  # NOTE: 1 real second = 1 simulated minute
+    sim_speed: float = 60.0 # probably shoudl delete that
 
 
 class AppConfig(BaseSettings):
