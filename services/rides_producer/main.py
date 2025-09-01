@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from time import sleep
 
-from services.events_producer.config import config
-from services.events_producer.loader import load_rides
-from services.events_producer.producer import RideProducer
+from services.rides_producer.config import config
+from services.rides_producer.loader import load_rides
+from services.rides_producer.producer import RideProducer
 
 
 def main():
