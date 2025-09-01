@@ -1,0 +1,7 @@
+kafka:
+  bootstrap_servers: "localhost:9092"
+  topic: "ride_requests"
+
+producer:
+  json_file: "rides.json"
+  sim_speed: 60

@@ -1,4 +1,5 @@
-from pydantic import AwareDatetime
+import datetime
+
 from pydantic import BaseModel, Field
 
 from shared.models import Location, VehicleType
@@ -9,5 +10,5 @@ class Ride(BaseModel):
     pickup: Location
     dropoff: Location
     vehicle_type: VehicleType
-    timestamp: AwareDatetime
+    timestamp: datetime.datetime
     user_rating: float = Field(..., ge=0, le=5)
