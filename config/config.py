@@ -4,6 +4,7 @@ import yaml
 from pydantic_settings import BaseSettings
 
 from config.dispatcher import DispatcherConfig
+from config.metrics import MetricsConfig
 from config.rides_producer import RidesProducerConfig
 
 
@@ -22,6 +23,7 @@ class AppConfig(BaseSettings):
     redis: RedisConfig
     rides_producer: RidesProducerConfig
     dispatcher: DispatcherConfig
+    metrics: MetricsConfig
 
     @classmethod
     def from_yaml(cls, filename: str = "config.yaml"):
@@ -36,6 +38,7 @@ class AppConfig(BaseSettings):
         return cls(
             kafka=KafkaConfig(**cfg["kafka"]),
             redis=RedisConfig(**cfg["redis"]),
+            metrics=MetricsConfig(**cfg["metrics"]),
             rides_producer=RidesProducerConfig(**cfg["rides_producer"]),
             dispatcher=DispatcherConfig(**cfg["dispatcher"])
         )
