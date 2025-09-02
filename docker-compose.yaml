@@ -1,4 +1,14 @@
 services:
+
+  rides_producer:
+    build: ./services/rides_producer
+    volumes:
+      - ./shared:/app/shared
+      - ./config:/app/config
+    depends_on:
+      - kafka
+      - redis
+
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
