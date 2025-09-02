@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import redis
 
 from config.config import config
@@ -10,16 +12,18 @@ class RedisClient:
     Shared Redis client for reuse across SDK modules.
     """
 
-    _client: redis.Redis
+    _client: redis.client.Redis
 
     def __init__(self, host: str, port: int, db: int):
         self._client = redis.Redis(host=host, port=port, db=db, decode_responses=True)
 
     @property
+    @lru_cache
     def driver(self) -> DriverRedisSDK:
         return DriverRedisSDK(self._client)
 
     @property
+    @lru_cache
     def clock(self) -> RedisClock:
         return RedisClock(self._client)
 

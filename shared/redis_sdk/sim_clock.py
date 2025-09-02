@@ -7,10 +7,10 @@ class RedisClock:
     """
     Shared simulation clock stored in Redis.
     """
-    _client: redis.Redis
+    _client: redis.client.Redis
     KEY = "sim_clock"
 
-    def __init__(self, client: redis.Redis):
+    def __init__(self, client: redis.client.Redis):
         self._client = client
 
     def set(self, dt: datetime):

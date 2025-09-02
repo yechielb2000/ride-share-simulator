@@ -1,0 +1,23 @@
+from enum import Enum
+
+from services.dispatcher.matching_strategies.nearest import NearestDriverStrategy
+from services.dispatcher.matching_strategies.strategy import MatchingStrategy
+from services.dispatcher.matching_strategies.weighted import WeightedScoreStrategy
+
+
+class StrategyType(str, Enum):
+    NEAREST = 'nearest'
+    WEIGHTED = 'weighted'
+
+
+STRATEGIES: dict[StrategyType, type[MatchingStrategy]] = {
+    StrategyType.NEAREST: NearestDriverStrategy,
+    StrategyType.WEIGHTED: WeightedScoreStrategy,
+}
+
+
+def get_strategy(strategy_type: StrategyType) -> type[MatchingStrategy]:
+    strategy = STRATEGIES.get(strategy_type)
+    if not strategy:
+        raise ValueError('strategy_type must be one of {}'.format(STRATEGIES.keys()))
+    return strategy

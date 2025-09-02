@@ -3,10 +3,12 @@ from pathlib import Path
 import yaml
 from pydantic_settings import BaseSettings
 
+from config.dispatcher import DispatcherConfig
+from config.rides_producer import RidesProducerConfig
+
 
 class KafkaConfig(BaseSettings):
     bootstrap_servers: str = "localhost:9092"
-    rides_topic: str
 
 
 class RedisConfig(BaseSettings):
@@ -15,15 +17,11 @@ class RedisConfig(BaseSettings):
     db: int = 0
 
 
-class RidesProducerConfig(BaseSettings):
-    json_file: Path
-    sim_speed: float = 60.0 # probably should delete that
-
-
 class AppConfig(BaseSettings):
     kafka: KafkaConfig
     redis: RedisConfig
     rides_producer: RidesProducerConfig
+    dispatcher: DispatcherConfig
 
     @classmethod
     def from_yaml(cls, filename: str = "config.yaml"):
@@ -38,7 +36,8 @@ class AppConfig(BaseSettings):
         return cls(
             kafka=KafkaConfig(**cfg["kafka"]),
             redis=RedisConfig(**cfg["redis"]),
-            rides_producer=RidesProducerConfig(**cfg["rides_producer"])
+            rides_producer=RidesProducerConfig(**cfg["rides_producer"]),
+            dispatcher=DispatcherConfig(**cfg["dispatcher"])
         )
 
 

@@ -5,3 +5,6 @@ kafka:
 rides_producer:
   json_file: "rides.json"
   sim_speed: 3
+
+dispatcher:
+  strategy: "nearest"

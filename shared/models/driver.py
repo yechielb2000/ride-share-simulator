@@ -6,7 +6,7 @@ from shared.models import Location, VehicleType
 
 
 class Driver(BaseModel):
-    id: int
+    id: str
     name: str
     vehicle_type: VehicleType
     busy: bool = False
