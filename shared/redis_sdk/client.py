@@ -3,8 +3,7 @@ from functools import lru_cache
 import redis
 
 from config.config import config
-from shared.redis_sdk.driver import DriverRedisSDK
-from shared.redis_sdk.sim_clock import RedisClock
+from shared.redis_sdk import DriverRedisSDK, MetricsRedisSDK, RedisClock
 
 
 class RedisClient:
@@ -27,11 +26,19 @@ class RedisClient:
     def clock(self) -> RedisClock:
         return RedisClock(self._client)
 
+    @property
+    @lru_cache
+    def metrics(self) -> MetricsRedisSDK:
+        return MetricsRedisSDK(self._client)
+
     def close(self):
         try:
             self._client.close()
         except Exception:
             pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 redis_client = RedisClient(host=config.redis.host, port=config.redis.port, db=config.redis.db)

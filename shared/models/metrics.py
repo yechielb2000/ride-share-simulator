@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from shared.models import Assignment
+from shared.models import Assignments
 
 
 class Metrics(BaseModel):
@@ -8,6 +8,6 @@ class Metrics(BaseModel):
 
 
 class Report(BaseModel):
-    assignments: list[Assignment] = []
+    assignments: Assignments = Assignments()
     unassigned_rides: list[str] = []
     metrics: Metrics = Metrics()

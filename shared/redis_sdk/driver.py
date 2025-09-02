@@ -4,7 +4,7 @@ from typing import List, Optional
 import redis
 
 from shared.geo import distance
-from shared.models import Driver, Location
+from shared.models import Driver, Location, Drivers, VehicleType
 
 
 class DriverRedisSDK:
@@ -33,19 +33,26 @@ class DriverRedisSDK:
             return Driver.model_validate(data)
         return None
 
-    def list_all(self) -> List[Driver]:
+    def list_all(self) -> Drivers:
         """Return all drivers."""
+        drivers = Drivers()
         driver_ids = self._client.smembers("drivers:set")
-        return [self.get(driver_id) for driver_id in driver_ids if self.get(driver_id)]
+        for driver_id in driver_ids:
+            driver = self.get(driver_id)
+            if driver:
+                drivers.append(Driver.model_validate(driver))
+        return drivers
 
-    def list_available(self, vehicle_type: Optional[str] = None) -> List[Driver]:
+    def list_available(self) -> Drivers:
         """
         Return available drivers, optionally filtered by vehicle type.
         """
         driver_ids = self._client.smembers("drivers:available")
-        drivers = [self.get(driver_id) for driver_id in driver_ids if self.get(driver_id)]
-        if vehicle_type:
-            drivers = [d for d in drivers if d.vehicle_type == vehicle_type]
+        drivers = Drivers()
+        for driver_id in driver_ids:
+            driver = self.get(driver_id)
+            if driver:
+                drivers.append(Driver.model_validate(driver))
         return drivers
 
     def mark_busy(self, driver_id: int, free_time: datetime) -> bool:

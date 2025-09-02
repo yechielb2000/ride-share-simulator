@@ -12,3 +12,7 @@ class Ride(BaseModel):
     vehicle_type: VehicleType
     timestamp: datetime.datetime
     user_rating: float = Field(..., ge=0, le=5)
+
+
+class Rides(list[Ride]):
+    pass

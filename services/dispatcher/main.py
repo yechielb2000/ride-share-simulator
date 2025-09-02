@@ -30,7 +30,8 @@ def main():
 
         set_drivers_free()
 
-        available_drivers = redis_client.driver.list_available(vehicle_type=ride.vehicle_type)
+        available_drivers = redis_client.driver.list_available()
+        available_drivers = available_drivers.filter_by_vehicle_type(vehicle_type=ride.vehicle_type)
         if not available_drivers:
             # TODO: replace with log
             print(f"No available driver for ride {ride.id}")
@@ -46,6 +47,7 @@ def main():
 
         assignment = Assignment(
             ride_id=ride.id,
+            ride_request_time=ride.timestamp,
             driver_id=selected_driver.id,
             timestamp=redis_client.clock.get()
         )
