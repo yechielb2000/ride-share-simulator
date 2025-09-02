@@ -5,10 +5,9 @@ from services.rides_producer.loader import load_rides
 from shared.kafka.producer import KafkaProducer
 from shared.models import Ride
 
-ride_producer = KafkaProducer[Ride](config.kafka.bootstrap_servers, config.rides_producer.topic)
-
 
 def main():
+    ride_producer = KafkaProducer[Ride](config.kafka.bootstrap_servers, config.rides_producer.topic)
     for ride in load_rides(config.rides_producer.json_file):
         sleep(config.rides_producer.sim_speed)
         ride_producer.send(ride)
