@@ -1,21 +1,21 @@
 import datetime
 
 from config.config import config
-from services.dispatcher.assignments_producer import AssignmentProducer
 from services.dispatcher.matching_strategies.strategy_factory import get_strategy
-from services.dispatcher.rides_consumer import RidesConsumer
 from shared.geo import eta_minutes
+from shared.kafka import KafkaConsumer, KafkaProducer
 from shared.models import Assignment, Ride, Driver
 from shared.redis_sdk import redis_client
 
 # TODO: not here! load drivers on lifecycle start
 
-ride_consumer = RidesConsumer(
+ride_consumer = KafkaConsumer[Ride](
     bootstrap_servers=config.kafka.bootstrap_servers,
     group_id=config.dispatcher.group_id,
     topic=config.rides_producer.topic,
+    model_cls=Ride,
 )
-assignment_producer = AssignmentProducer(
+assignment_producer = KafkaProducer[Assignment](
     bootstrap_servers=config.kafka.bootstrap_servers,
     topic=config.dispatcher.producer.topic,
 )

@@ -6,7 +6,7 @@ from shared.models import Location, VehicleType
 
 
 class Ride(BaseModel):
-    id: int
+    id: str
     pickup: Location
     dropoff: Location
     vehicle_type: VehicleType

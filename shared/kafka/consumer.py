@@ -1,20 +1,24 @@
+from typing import TypeVar, Generic, Generator, Type
+
 from confluent_kafka import Consumer, KafkaException
+from pydantic import BaseModel
 
-from shared.models import Ride
+T = TypeVar("T", bound=BaseModel)
 
 
-class RidesConsumer:
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str):
+class KafkaConsumer(Generic[T]):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: Type[T]):
         self.consumer = Consumer({
             "bootstrap.servers": bootstrap_servers,
             "group.id": group_id,
             "auto.offset.reset": "earliest"
         })
         self.consumer.subscribe([topic])
+        self.model_cls = model_cls
 
-    def consume(self):
+    def consume(self) -> Generator[T, None, None]:
         """
-        yield Ride objects.
+        Continuously yield Pydantic model objects of type T from Kafka.
         """
         try:
             while True:
@@ -24,6 +28,6 @@ class RidesConsumer:
                 if msg.error():
                     raise KafkaException(msg.error())
 
-                yield Ride.load_model(msg.value().decode())
+                yield self.model_cls.model_validate(msg.value().decode())
         finally:
             self.consumer.close()
