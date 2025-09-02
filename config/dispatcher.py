@@ -1,6 +1,11 @@
+from enum import Enum
+
 from pydantic_settings import BaseSettings
 
-from services.dispatcher.matching_strategies.strategy_factory import StrategyType
+
+class StrategyType(str, Enum):
+    NEAREST = 'nearest'
+    WEIGHTED = 'weighted'
 
 
 class DispatcherProducer(BaseSettings):
@@ -9,5 +14,5 @@ class DispatcherProducer(BaseSettings):
 
 class DispatcherConfig(BaseSettings):
     group_id: str = "dispatcher"
-    producer: DispatcherProducer
+    producer: DispatcherProducer = DispatcherProducer()
     strategy: StrategyType

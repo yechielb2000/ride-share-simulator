@@ -1,14 +1,7 @@
-from enum import Enum
-
+from config.dispatcher import StrategyType
 from services.dispatcher.matching_strategies.nearest import NearestDriverStrategy
 from services.dispatcher.matching_strategies.strategy import MatchingStrategy
 from services.dispatcher.matching_strategies.weighted import WeightedScoreStrategy
-
-
-class StrategyType(str, Enum):
-    NEAREST = 'nearest'
-    WEIGHTED = 'weighted'
-
 
 STRATEGIES: dict[StrategyType, type[MatchingStrategy]] = {
     StrategyType.NEAREST: NearestDriverStrategy,

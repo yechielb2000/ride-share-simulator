@@ -1,9 +1,8 @@
 kafka:
-  bootstrap_servers: "localhost:9092"
-  rides_topic: "ride_requests"
+  bootstrap_servers: "kafka:9092"
 
 rides_producer:
-  json_file: "rides.json"
+  json_file: /app/services/rides_producer/rides.json
   sim_speed: 3
 
 dispatcher:

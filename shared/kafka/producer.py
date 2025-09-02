@@ -3,6 +3,8 @@ from typing import TypeVar, Generic, Callable
 from confluent_kafka import Producer
 from pydantic import BaseModel
 
+from shared.logger import logger
+
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -18,6 +20,13 @@ class KafkaProducer(Generic[T]):
         self.producer.produce(
             topic=self.topic,
             value=item.model_dump_json(),
-            callback=callback
+            callback=callback or self.__delivery_report
         )
         self.producer.flush()
+
+    @staticmethod
+    def __delivery_report(err, msg):
+        if err is not None:
+            logger.error("Delivery failed for record", exc_info=err, key=msg.key())
+        else:
+            logger.debug("Record delivered", key=msg.key(), topic=msg.topic(), partition=msg.partition())

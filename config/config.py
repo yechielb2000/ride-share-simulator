@@ -9,7 +9,7 @@ from config.rides_producer import RidesProducerConfig
 
 
 class KafkaConfig(BaseSettings):
-    bootstrap_servers: str = "localhost:9092"
+    bootstrap_servers: str = "kafka:9092"
 
 
 class RedisConfig(BaseSettings):
@@ -19,11 +19,11 @@ class RedisConfig(BaseSettings):
 
 
 class AppConfig(BaseSettings):
-    kafka: KafkaConfig
-    redis: RedisConfig
+    kafka: KafkaConfig = KafkaConfig()
+    redis: RedisConfig = RedisConfig()
     rides_producer: RidesProducerConfig
     dispatcher: DispatcherConfig
-    metrics: MetricsConfig
+    metrics: MetricsConfig = MetricsConfig()
 
     @classmethod
     def from_yaml(cls, filename: str = "config.yaml"):
@@ -36,9 +36,9 @@ class AppConfig(BaseSettings):
             cfg = yaml.safe_load(f)
 
         return cls(
-            kafka=KafkaConfig(**cfg["kafka"]),
-            redis=RedisConfig(**cfg["redis"]),
-            metrics=MetricsConfig(**cfg["metrics"]),
+            kafka=KafkaConfig(**cfg["kafka"]) if cfg.get("kafka") else KafkaConfig(),
+            redis=RedisConfig(**cfg["redis"]) if cfg.get("redis") else RedisConfig(),
+            metrics=MetricsConfig(**cfg["metrics"]) if cfg.get("metrics") else MetricsConfig(),
             rides_producer=RidesProducerConfig(**cfg["rides_producer"]),
             dispatcher=DispatcherConfig(**cfg["dispatcher"])
         )
