@@ -1,13 +1,7 @@
 # Ride-share-Simulator
 
 
-## installation Process
-Make kafka cluster id 
-```bash
-powershell$ [guid]::NewGuid().ToString()
-bash$ cat /proc/sys/kernel/random/uuid
-```
-Edit the `CLUSTER_ID` of kafka in `docker-compose.yaml`.  
+## installation Process 
 Run docker compose:
 ```bash
 docker compose up -d
