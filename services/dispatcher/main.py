@@ -1,7 +1,7 @@
 import datetime
 
-from shared.config.config import config
 from services.dispatcher.matching_strategies.strategy_factory import get_strategy
+from shared.config.config import config
 from shared.geo import eta_minutes
 from shared.kafka import KafkaConsumer
 from shared.logger import logger
@@ -46,6 +46,7 @@ def main():
             timestamp=redis_client.clock.get()
         )
         redis_client.metrics.add_assignment(assignment)
+        logger.info("Ride was assigned to driver", ride_id=ride.id, driver_id=selected_driver.id)
 
 
 def set_drivers_free():

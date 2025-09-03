@@ -1,2 +1,0 @@
-- what do you want me to do if the matching strategies do not satisfy the current ride?
-- could you explain a little more about the "weighted score" strategy? (just a few words about it)

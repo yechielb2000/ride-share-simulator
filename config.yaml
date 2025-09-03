@@ -9,7 +9,7 @@ redis:
 rides_producer:
   topic: "ride_requests"
   json_file: "/app/services/rides_producer/rides.json"
-  sim_speed: 3
+  sim_speed: 5
 
 dispatcher:
   group_id: "dispatcher"

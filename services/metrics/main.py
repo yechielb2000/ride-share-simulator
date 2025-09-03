@@ -12,5 +12,7 @@ async def get_report():
     return redis_client.metrics.get_report()
 
 
+# TODO: get assignments etc...
+
 if __name__ == '__main__':
     uvicorn.run(app, host=config.metrics.host, port=config.metrics.port)

@@ -1,3 +1,5 @@
+import json
+
 import redis
 
 from shared.models import Assignment, Assignments
@@ -22,7 +24,8 @@ class MetricsRedisSDK:
         score = assignment.timestamp.timestamp()
 
         pipe = self._client.pipeline(transaction=True)
-        pipe.hset(key_hash, mapping=assignment.model_dump())
+        serialized_data = json.loads(assignment.model_dump_json())
+        pipe.hset(key_hash, mapping=serialized_data)
         pipe.zadd(key_assignments, {assignment.id: score})
         pipe.execute()
 
@@ -35,10 +38,9 @@ class MetricsRedisSDK:
 
         assignments = Assignments()
         for rid in ids:
-            raw = self._client.hgetall(f"metrics:assignment:{rid.decode()}")
+            raw = self._client.hgetall(f"metrics:assignment:{rid}")
             if raw:
-                decoded = {k.decode(): v.decode() for k, v in raw.items()}
-                assignments.append(Assignment.model_validate(decoded))
+                assignments.append(Assignment.model_validate(raw))
         return assignments
 
     def add_unassigned(self, ride_id: str):
@@ -51,7 +53,7 @@ class MetricsRedisSDK:
 
     def list_unassigned(self) -> list[str]:
         key = "metrics:unassigned"
-        return [r.decode() for r in self._client.smembers(key)]
+        return [ride_id for ride_id in self._client.smembers(key)]
 
     def get_report(self) -> Report:
         assignments = self.list_assignments()

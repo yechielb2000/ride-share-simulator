@@ -15,7 +15,7 @@ class RedisClock:
     def __init__(self, client: redis.client.Redis):
         self._client = client
 
-    def set(self, dt: datetime):
+    def set(self, dt: datetime) -> None:
         """Set the clock to a specific datetime."""
         self._client.set(self.KEY, dt.isoformat())
         logger.info(f"Clock set to {dt.isoformat()}")

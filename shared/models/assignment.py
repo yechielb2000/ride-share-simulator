@@ -9,6 +9,11 @@ class Assignment(BaseModel):
     timestamp: datetime.datetime
     ride_request_time: datetime.datetime  # since requesting it from db, just for this is non-efficient; I save it here too.
 
+    @property
+    def id(self):
+        """The actual assignment id is the ride_id."""
+        return self.ride_id
+
     def average_pickup_eta_minutes(self) -> float:
         return abs(self.timestamp - self.ride_request_time).total_seconds() / 60
 
