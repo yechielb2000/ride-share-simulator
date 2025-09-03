@@ -55,6 +55,14 @@ class DriverRedisSDK:
                 drivers.append(Driver.model_validate(driver))
         return drivers
 
+    def list_unavailable(self) -> Drivers:
+        """
+        Return drivers that are currently busy (unavailable).
+        """
+        all_driver_ids = self.list_all()
+        available_ids = self.list_available()
+        return all_driver_ids - available_ids
+
     def mark_busy(self, driver_id: int, free_time: datetime) -> bool:
         """
         Mark driver as busy and set free_time.
