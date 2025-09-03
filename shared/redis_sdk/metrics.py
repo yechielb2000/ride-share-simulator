@@ -21,7 +21,7 @@ class MetricsRedisSDK:
         """
         key_assignments = "metrics:assignments"
         key_hash = f"metrics:assignment:{assignment.id}"
-        score = assignment.timestamp.timestamp()
+        score = assignment.pickup_time.timestamp()
 
         pipe = self._client.pipeline(transaction=True)
         serialized_data = json.loads(assignment.model_dump_json())

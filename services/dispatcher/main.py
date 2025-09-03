@@ -45,15 +45,11 @@ def set_drivers_free():
     set free drivers that are no longer busy
     """
     for driver in redis_client.driver.list_unavailable():
-        # not sure if I need to check for driver.eta but for the sake of it...
         if driver.eta and driver.eta <= redis_client.clock.get():
             redis_client.driver.mark_free(driver.id)
 
 
 def set_drive_busy(ride: Ride, driver: Driver):
-    """
-    Mark selected-driver as busy
-    """
     overall_travel_time = get_pickup_eta(ride, driver) + datetime.timedelta(seconds=ride.eta_seconds())
     redis_client.driver.mark_busy(driver.id, overall_travel_time)
     logger.info("Driver marked busy", ride_id=ride.id, driver_id=driver.id, eta=overall_travel_time)
@@ -65,13 +61,11 @@ def get_pickup_eta(ride: Ride, driver: Driver) -> datetime.datetime:
 
 
 def assign(ride: Ride, selected_driver: Driver):
-    pickup_eta = get_pickup_eta(ride, selected_driver)
-
     assignment = Assignment(
         ride_id=ride.id,
         ride_request_time=ride.timestamp,
         driver_id=selected_driver.id,
-        timestamp=pickup_eta
+        pickup_time=get_pickup_eta(ride, selected_driver)
     )
     redis_client.metrics.add_assignment(assignment)
     set_drive_busy(ride, selected_driver)
