@@ -8,7 +8,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class KafkaAsyncConsumer(Generic[T]):
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: T):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: type[T]):
         self.consumer = Consumer({
             "bootstrap.servers": bootstrap_servers,
             "group.id": group_id,

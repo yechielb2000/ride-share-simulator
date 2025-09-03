@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Generator, Type
+from typing import TypeVar, Generic, Generator
 
 from confluent_kafka import Consumer, KafkaException
 from pydantic import BaseModel
@@ -9,7 +9,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class KafkaConsumer(Generic[T]):
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: Type[T]):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: type[T]):
         self.consumer = Consumer({
             "bootstrap.servers": bootstrap_servers,
             "group.id": group_id,
