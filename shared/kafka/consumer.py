@@ -9,7 +9,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class KafkaConsumer(Generic[T]):
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: type[T]):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: T):
         self.consumer = Consumer({
             "bootstrap.servers": bootstrap_servers,
             "group.id": group_id,
