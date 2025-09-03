@@ -7,6 +7,11 @@ from pydantic import BaseModel
 DEFAULT_SPEED_KMH = 30.0  # as per assignment
 
 
+class VehicleType(str, Enum):
+    PRIVATE = 'private'
+    SUV = 'suv'
+
+
 class Location(BaseModel):
     lat: float
     lon: float
@@ -30,8 +35,3 @@ class Location(BaseModel):
         Estimate travel time on current location and given locations and a speed (km/h).
         """
         return self.distance(loc2) / speed_kmh
-
-
-class VehicleType(str, Enum):
-    PRIVATE = 'private'
-    SUV = 'suv'
