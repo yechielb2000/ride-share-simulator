@@ -30,7 +30,7 @@ class DriverRedisSDK:
         """Get a driver by ID."""
         data = self._client.get(f"driver:{driver_id}")
         if data:
-            return Driver.model_validate(data)
+            return Driver.model_validate_json(data)
         return None
 
     def list_all(self) -> Drivers:
