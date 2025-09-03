@@ -1,20 +1,36 @@
 services:
 
+  drivers_loader:
+    build:
+      context: .
+      dockerfile: services/drivers_loader/Dockerfile
+    depends_on:
+      - redis
+    restart: no
+
   rides_producer:
     build:
       context: .
       dockerfile: services/rides_producer/Dockerfile
     depends_on:
-      - kafka
-      - redis
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
+      drivers_loader:
+        condition: service_completed_successfully
 
   dispatcher:
     build:
       context: .
       dockerfile: services/dispatcher/Dockerfile
     depends_on:
-      - kafka
-      - redis
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
+      drivers_loader:
+        condition: service_completed_successfully
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0

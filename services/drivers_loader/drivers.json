@@ -1,0 +1,54 @@
+{
+  "drivers": [
+    {
+      "id": "1",
+      "name": "Alice",
+      "vehicle_type": "private",
+      "location": {
+        "lat": 32.0853,
+        "lon": 34.7818
+      },
+      "rating": 4.9
+    },
+    {
+      "id": "2",
+      "name": "Bob",
+      "vehicle_type": "suv",
+      "location": {
+        "lat": 32.0800,
+        "lon": 34.7800
+      },
+      "rating": 4.7
+    },
+    {
+      "id": "3",
+      "name": "Charlie",
+      "vehicle_type": "private",
+      "location": {
+        "lat": 32.0900,
+        "lon": 34.7700
+      },
+      "rating": 4.8
+    },
+    {
+      "id": "4",
+      "name": "Diana",
+      "vehicle_type": "suv",
+      "location": {
+        "lat": 32.0750,
+        "lon": 34.7900
+      },
+      "rating": 4.6
+    },
+    {
+      "id": "5",
+      "name": "Ethan",
+      "vehicle_type": "private",
+      "location": {
+        "lat": 32.0880,
+        "lon": 34.7820
+      },
+      "rating": 4.5
+    }
+  ]
+}

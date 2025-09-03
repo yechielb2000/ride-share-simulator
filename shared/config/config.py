@@ -4,6 +4,7 @@ import yaml
 from pydantic_settings import BaseSettings
 
 from shared.config.dispatcher import DispatcherConfig
+from shared.config.drivers_loader import DriverLoaderConfig
 from shared.config.metrics import MetricsConfig
 from shared.config.rides_producer import RidesProducerConfig
 
@@ -19,11 +20,12 @@ class RedisConfig(BaseSettings):
 
 
 class AppConfig(BaseSettings):
-    kafka: KafkaConfig = KafkaConfig()
-    redis: RedisConfig = RedisConfig()
+    kafka: KafkaConfig
+    redis: RedisConfig
     rides_producer: RidesProducerConfig
     dispatcher: DispatcherConfig
-    metrics: MetricsConfig = MetricsConfig()
+    metrics: MetricsConfig
+    drivers_loader: DriverLoaderConfig
 
     @classmethod
     def from_yaml(cls, filename: str = "config.yaml"):
@@ -39,6 +41,7 @@ class AppConfig(BaseSettings):
             kafka=KafkaConfig(**cfg["kafka"]) if cfg.get("kafka") else KafkaConfig(),
             redis=RedisConfig(**cfg["redis"]) if cfg.get("redis") else RedisConfig(),
             metrics=MetricsConfig(**cfg["metrics"]) if cfg.get("metrics") else MetricsConfig(),
+            drivers_loader=DriverLoaderConfig(**cfg["drivers_loader"]),
             rides_producer=RidesProducerConfig(**cfg["rides_producer"]),
             dispatcher=DispatcherConfig(**cfg["dispatcher"])
         )
