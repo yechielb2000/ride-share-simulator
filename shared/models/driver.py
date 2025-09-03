@@ -1,7 +1,6 @@
-import datetime
 from typing import Optional, Self, Iterable
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, FutureDatetime
 
 from shared.models import Location, VehicleType
 
@@ -12,7 +11,7 @@ class Driver(BaseModel):
     vehicle_type: VehicleType
     busy: bool = False
     location: Location
-    eta: Optional[datetime.datetime] = None
+    eta: Optional[FutureDatetime] = None
     rating: float = Field(..., ge=0, le=5)
 
 

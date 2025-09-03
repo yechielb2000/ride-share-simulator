@@ -13,7 +13,7 @@ rides_producer:
 
 dispatcher:
   group_id: "dispatcher"
-  strategy: "weighted"
+  strategy: "nearest"
 
 metrics:
   group_id: "metrics"
@@ -22,3 +22,6 @@ metrics:
 
 drivers_loader:
   json_file: "/app/services/drivers_loader/drivers.json"
+
+clock:
+  advance_delta_seconds: 1

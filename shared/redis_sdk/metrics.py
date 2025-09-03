@@ -7,10 +7,13 @@ from shared.models.metrics import Report, Metrics
 
 
 class MetricsRedisSDK:
-    _client: redis.client.Redis
 
-    def __init__(self, client: redis.client.Redis):
-        self._client = client
+    def __init__(self, pool: redis.ConnectionPool) -> None:
+        self._pool = pool
+
+    @property
+    def client(self) -> redis.Redis:
+        return redis.Redis(connection_pool=self._pool)
 
     def add_assignment(self, assignment: Assignment):
         """
@@ -23,7 +26,7 @@ class MetricsRedisSDK:
         key_hash = f"metrics:assignment:{assignment.id}"
         score = assignment.pickup_time.timestamp()
 
-        pipe = self._client.pipeline(transaction=True)
+        pipe = self.client.pipeline(transaction=True)
         serialized_data = json.loads(assignment.model_dump_json())
         pipe.hset(key_hash, mapping=serialized_data)
         pipe.zadd(key_assignments, {assignment.id: score})
@@ -34,26 +37,26 @@ class MetricsRedisSDK:
         Return all assignments in timestamp order.
         """
         key_assignments = "metrics:assignments"
-        ids = self._client.zrange(key_assignments, 0, -1)
+        ids = self.client.zrange(key_assignments, 0, -1)
 
         assignments = Assignments()
         for rid in ids:
-            raw = self._client.hgetall(f"metrics:assignment:{rid}")
+            raw = self.client.hgetall(f"metrics:assignment:{rid}")
             if raw:
                 assignments.append(Assignment.model_validate(raw))
         return assignments
 
     def add_unassigned(self, ride_id: str):
         key = "metrics:unassigned"
-        self._client.sadd(key, ride_id)
+        self.client.sadd(key, ride_id)
 
     def remove_unassigned(self, ride_id: str):
         key = "metrics:unassigned"
-        self._client.srem(key, ride_id)
+        self.client.srem(key, ride_id)
 
     def list_unassigned(self) -> list[str]:
         key = "metrics:unassigned"
-        return [ride_id for ride_id in self._client.smembers(key)]
+        return [ride_id for ride_id in self.client.smembers(key)]
 
     def get_report(self) -> Report:
         assignments = self.list_assignments()

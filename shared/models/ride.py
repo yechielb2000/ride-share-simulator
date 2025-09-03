@@ -1,6 +1,4 @@
-import datetime
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, FutureDatetime
 
 from shared.models import Location, VehicleType
 
@@ -10,7 +8,7 @@ class Ride(BaseModel):
     pickup: Location
     dropoff: Location
     vehicle_type: VehicleType
-    timestamp: datetime.datetime
+    timestamp: FutureDatetime
     user_rating: float = Field(..., ge=0, le=5)
 
     def eta_seconds(self) -> float:

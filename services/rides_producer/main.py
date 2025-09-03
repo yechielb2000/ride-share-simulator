@@ -11,7 +11,7 @@ def main():
     ride_producer = KafkaProducer[Ride](config.kafka.bootstrap_servers, config.rides_producer.topic)
     for ride in load_models_from_json(config.rides_producer.json_file, "rides", Ride):
         sleep(config.rides_producer.sim_speed)
-        ride.timestamp = datetime.datetime.now()
+        ride.timestamp = datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=5)
         ride_producer.send(ride)
 
 
