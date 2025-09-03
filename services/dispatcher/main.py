@@ -19,13 +19,15 @@ strategy = get_strategy(config.dispatcher.strategy)
 
 def main():
     for ride in ride_consumer.consume():
-        if redis_client.clock.get() < ride.timestamp:
-            redis_client.clock.set(ride.timestamp)
-
-        set_drivers_free()
+        current_time = redis_client.clock.get()
+        if ride.timestamp < current_time:
+            logger.info("Skipping past ride", ride_id=ride.id, ride_ts=ride.timestamp, clock=current_time)
+            redis_client.metrics.add_unassigned(ride_id=ride.id)
+            continue
 
         available_drivers = redis_client.driver.list_available()
         available_drivers = available_drivers.filter_by_vehicle_type(vehicle_type=ride.vehicle_type)
+
         if not available_drivers:
             logger.info("No available drivers")
             redis_client.metrics.add_unassigned(ride_id=ride.id)
@@ -40,27 +42,27 @@ def main():
         assign(ride, selected_driver)
 
 
-def set_drivers_free():
-    """
-    set free drivers that are no longer busy
-    """
-    for driver in redis_client.driver.list_unavailable():
-        if driver.eta and driver.eta <= redis_client.clock.get():
-            redis_client.driver.mark_free(driver.id)
-
-
 def set_drive_busy(ride: Ride, driver: Driver):
+    """
+    Mark the driver as busy until the ride and pickup time is complete.
+    """
     overall_travel_time = get_pickup_eta(ride, driver) + datetime.timedelta(seconds=ride.eta_seconds())
     redis_client.driver.mark_busy(driver.id, overall_travel_time)
     logger.info("Driver marked busy", ride_id=ride.id, driver_id=driver.id, eta=overall_travel_time)
 
 
 def get_pickup_eta(ride: Ride, driver: Driver) -> datetime.datetime:
-    pickup_eta = driver.location.eta_seconds_from_target(ride.pickup)
-    return ride.timestamp + datetime.timedelta(seconds=pickup_eta)
+    """
+    Calculate pickup ETA based on the driver's location and ride pickup point.
+    """
+    pickup_eta_seconds = driver.location.eta_seconds_from_target(ride.pickup)
+    return ride.timestamp + datetime.timedelta(seconds=pickup_eta_seconds)
 
 
 def assign(ride: Ride, selected_driver: Driver):
+    """
+    Create assignment, mark driver busy, and record metrics.
+    """
     assignment = Assignment(
         ride_id=ride.id,
         ride_request_time=ride.timestamp,

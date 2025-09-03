@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime
 
 import redis
 
@@ -18,23 +18,25 @@ class RedisClock:
     def client(self) -> redis.Redis:
         return redis.Redis(connection_pool=self._pool)
 
-    def set(self, dt: datetime) -> None:
+    def set(self, dt: datetime.datetime) -> None:
         """Set the clock to a specific datetime."""
         self.client.set(self.KEY, dt.isoformat())
         logger.info(f"Clock set to {dt.isoformat()}")
 
     def set_now_once(self):
-        """Set the clock to now but only if the key doesn't exist."""
+        """Set the clock now but only if the key doesn't exist."""
         if self.client.get(self.KEY) is None:
-            self.set(datetime.now())
+            self.set(datetime.datetime.now(datetime.UTC))
 
-    def get(self) -> datetime:
+    def get(self) -> datetime.datetime:
         ts = self.client.get(self.KEY)
         if not ts:
-            raise ValueError(f"could not get timestamp from clock (keyname: {self.KEY})")
-        return datetime.fromisoformat(ts)
+            self.set_now_once()
+            logger.info("Clock not set, setting to now")
+            return self.get()
+        return datetime.datetime.fromisoformat(ts)
 
-    def advance(self, delta: timedelta) -> datetime | None:
+    def advance(self, delta: datetime.timedelta) -> datetime.datetime | None:
         """Atomically advance the clock by delta."""
         while True:
             try:
@@ -47,4 +49,4 @@ class RedisClock:
                     pipe.execute()
                     return new_time
             except redis.WatchError:
-                logger.exception("Watch error")
+                pass

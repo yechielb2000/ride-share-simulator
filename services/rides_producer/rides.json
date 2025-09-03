@@ -11,7 +11,7 @@
         "lon": 36.7900
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-03T15:00:00",
+      "timestamp": "2025-09-04 01:08:19",
       "user_rating": 5
     },
     {
@@ -25,7 +25,7 @@
         "lon": 44.8000
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-03T15:05:00",
+      "timestamp": "2025-09-04 01:08:49",
       "user_rating": 4
     },
     {
@@ -39,7 +39,7 @@
         "lon": 54.8100
       },
       "vehicle_type": "suv",
-      "timestamp": "2025-09-03T15:07:00",
+      "timestamp": "2025-09-04 01:09:19",
       "user_rating": 5
     },
     {
@@ -53,7 +53,7 @@
         "lon": 34.8200
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-03T15:10:00",
+      "timestamp": "2025-09-04 01:09:29",
       "user_rating": 3
     },
     {
@@ -67,7 +67,7 @@
         "lon": 34.7900
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-01T10:20:00",
+      "timestamp": "2025-09-04 01:09:39",
       "user_rating": 4
     },
     {
@@ -81,7 +81,7 @@
         "lon": 34.7950
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-01T10:25:00",
+      "timestamp": "2025-09-04 01:09:50",
       "user_rating": 5
     },
     {
@@ -95,7 +95,7 @@
         "lon": 34.8000
       },
       "vehicle_type": "suv",
-      "timestamp": "2025-09-01T10:30:00",
+      "timestamp": "2025-09-04 01:20:19",
       "user_rating": 4
     },
     {
@@ -109,7 +109,7 @@
         "lon": 34.8050
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-01T10:35:00",
+      "timestamp": "2025-09-04 01:21:19",
       "user_rating": 5
     },
     {
@@ -123,7 +123,7 @@
         "lon": 34.7950
       },
       "vehicle_type": "suv",
-      "timestamp": "2025-09-01T10:40:00",
+      "timestamp": "2025-09-04 01:18:19",
       "user_rating": 4
     },
     {
@@ -137,7 +137,7 @@
         "lon": 34.7980
       },
       "vehicle_type": "private",
-      "timestamp": "2025-09-01T10:45:00",
+      "timestamp": "2025-09-04 01:10:19",
       "user_rating": 5
     }
   ]

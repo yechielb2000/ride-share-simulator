@@ -1,5 +1,4 @@
 import threading
-from pathlib import Path
 
 import inotify.adapters
 import inotify.constants

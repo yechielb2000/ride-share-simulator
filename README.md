@@ -167,6 +167,12 @@ The infra structure choices like the base image and shared directory seemed very
 the same binaries and packages again and again. For the shared directory, in production I would probably make each
 package there as an internal package.
 
+### Redis SDK
+
+No need to say why I made it, it's pretty clear. I just want to declare that the reason I didn't inherited the client,
+and instead I pass the controllers of each entity (rides, metrics, drivers, clock) is because I think it's nicer to have
+one endpoint for the sdk instead of making an object for each controller.
+
 ### Reading from JSON
 
 I really wanted to generate rides without using the JSON file, but it was required by the assignment.
@@ -189,12 +195,13 @@ model.
 
 I was thinking about two ways:
 
-1. Marking drivers busy / free via a custom clock that holds time which ticks from ride timestamp to another (The clock
-   is not really ticking by "worldwide time"), usage is in the dispatcher since I used this one.
+1. Marking drivers busy / free via a custom clock that ticks configurably. "THIS IS THE USED ONE"
 2. Marking drivers as busy in Redis with a TTL (with estimation of completion time). When the TTL expires, a background
    service listens to Redis keyspace notifications and automatically marks the driver as free,
 
 Both are adding them back to the available pool.
+
+> 🔴 Important: the clock is set to UTC tz (if you add ride, it should come with UTC tz)
 
 ### Dispatcher
 
@@ -205,18 +212,7 @@ We provide the class from the factory, and it gets its kwargs, and then we execu
 to drivers.
 
 **Dispatcher Flow**
-The flow of the service is very important because it's the heart of the system.  
-Let's begin.  
-For each consumed ride we want to check if the ride request time (ride.timestamp) is grater than the current clock we
-update the clock to be as ride timestamp. After that we free drivers that already passed the clock time. (the flow uses
-the first clock method since this is what we are using).  
-Then we assign a driver to the ride by the chosen strategy (pulling the right strategy using the factory).  
-Then we publish assignment to redis assignments. If no driver is assigned we add the ride id to the unassigned rides.
-
-**Redis SDK**
-No need to say why I made it, it's pretty clear. I just want to declare that the reason I didn't inherited the client,
-and instead I pass the controllers of each entity (rides, metrics, drivers, clock) is because I think it's nicer to have
-one endpoint for the sdk instead of making an object for each controller.
+Consumes rides, check if there are available drivers for this ride, check strategy, assign ride.
 
 # Things I would do next
 

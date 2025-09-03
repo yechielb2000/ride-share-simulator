@@ -6,13 +6,14 @@ import yaml
 from pydantic import PrivateAttr
 from pydantic_settings import BaseSettings
 
+from shared.config.clock import ClockConfig
 from shared.config.dispatcher import DispatcherConfig
 from shared.config.drivers_loader import DriverLoaderConfig
 from shared.config.metrics import MetricsConfig
 from shared.config.rides_producer import RidesProducerConfig
 from shared.logger import logger
 
-CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.yaml"
+CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
 
 
 class KafkaConfig(BaseSettings):
@@ -32,6 +33,7 @@ class AppConfig(BaseSettings):
     dispatcher: DispatcherConfig
     metrics: MetricsConfig
     drivers_loader: DriverLoaderConfig
+    clock: ClockConfig
 
     _instance: Self = PrivateAttr(default=None)
     _lock: threading.Lock = PrivateAttr(default_factory=threading.Lock)
@@ -56,6 +58,7 @@ class AppConfig(BaseSettings):
             kafka=KafkaConfig(**cfg.get("kafka", {})),
             redis=RedisConfig(**cfg.get("redis", {})),
             metrics=MetricsConfig(**cfg.get("metrics", {})),
+            clock=ClockConfig(**cfg.get("clock", {})),
             drivers_loader=DriverLoaderConfig(**cfg["drivers_loader"]),
             rides_producer=RidesProducerConfig(**cfg["rides_producer"]),
             dispatcher=DispatcherConfig(**cfg["dispatcher"]),

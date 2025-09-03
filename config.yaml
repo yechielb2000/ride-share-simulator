@@ -22,3 +22,6 @@ metrics:
 
 drivers_loader:
   json_file: "/app/services/drivers_loader/drivers.json"
+
+clock:
+  advance_delta_seconds: 1

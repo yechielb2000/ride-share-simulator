@@ -17,6 +17,17 @@ services:
       dockerfile: services/drivers_loader/Dockerfile
     depends_on:
       - redis
+      - clock
+    restart: no
+    volumes:
+      - ./config.yaml:/app/shared/config/config.yaml:ro
+
+  clock:
+    build:
+      context: .
+      dockerfile: services/clock/Dockerfile
+    depends_on:
+      - redis
     restart: no
     volumes:
       - ./config.yaml:/app/shared/config/config.yaml:ro

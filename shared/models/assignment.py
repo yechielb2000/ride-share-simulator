@@ -1,18 +1,15 @@
 import datetime
+from uuid import uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Assignment(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
     ride_id: str
     driver_id: str
     pickup_time: datetime.datetime
     ride_request_time: datetime.datetime
-
-    @property
-    def id(self):
-        """The actual assignment id is the ride_id."""
-        return self.ride_id
 
     def average_pickup_eta_minutes(self) -> float:
         """

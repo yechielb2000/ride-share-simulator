@@ -98,7 +98,7 @@ class DriverRedisSDK:
                     pipe.execute()
                     return True
                 except redis.WatchError:
-                    logger.exception("Watch error")
+                    pass
 
     def mark_free(self, driver_id: str) -> bool:
         """
@@ -127,7 +127,7 @@ class DriverRedisSDK:
                     pipe.execute()
                     return True
                 except redis.WatchError:
-                    logger.exception("Watch error")
+                    pass
 
     def get_locations(self, driver_ids: List[str]) -> dict[int, Location]:
         """
