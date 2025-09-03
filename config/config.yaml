@@ -1,9 +1,0 @@
-kafka:
-  bootstrap_servers: "kafka:9092"
-
-rides_producer:
-  json_file: /app/services/rides_producer/rides.json
-  sim_speed: 3
-
-dispatcher:
-  strategy: "nearest"

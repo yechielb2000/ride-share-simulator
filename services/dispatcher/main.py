@@ -1,6 +1,6 @@
 import datetime
 
-from config.config import config
+from shared.config.config import config
 from services.dispatcher.matching_strategies.strategy_factory import get_strategy
 from shared.geo import eta_minutes
 from shared.kafka import KafkaConsumer

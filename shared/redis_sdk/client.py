@@ -1,9 +1,8 @@
-import datetime
 from functools import lru_cache
 
 import redis
 
-from config.config import config
+from shared.config.config import config
 from shared.redis_sdk.driver import DriverRedisSDK
 from shared.redis_sdk.metrics import MetricsRedisSDK
 from shared.redis_sdk.sim_clock import RedisClock

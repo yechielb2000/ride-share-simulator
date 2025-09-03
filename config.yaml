@@ -1,0 +1,23 @@
+kafka:
+  bootstrap_servers: "kafka:9092"
+
+redis:
+  host: "redis"
+  port: 6379
+  db: 0
+
+rides_producer:
+  topic: "ride_requests"
+  json_file: "/app/services/rides_producer/rides.json"
+  sim_speed: 3
+
+dispatcher:
+  group_id: "dispatcher"
+  strategy: "nearest"
+  producer:
+    topic: "assignments"
+
+metrics:
+  group_id: "metrics"
+  host: "0.0.0.0"
+  port: 8080

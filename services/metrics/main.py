@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from config.config import config
+from shared.config.config import config
 from shared.redis_sdk import redis_client
 
 app = FastAPI()

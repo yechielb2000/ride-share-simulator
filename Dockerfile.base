@@ -12,6 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+COPY shared/ ./shared
+
+COPY config.yaml ./shared/config/config.yaml
+
 COPY pyproject.toml uv.lock ./
 
 RUN uv sync --frozen --no-cache

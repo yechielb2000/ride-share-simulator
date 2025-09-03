@@ -3,9 +3,9 @@ from pathlib import Path
 import yaml
 from pydantic_settings import BaseSettings
 
-from config.dispatcher import DispatcherConfig
-from config.metrics import MetricsConfig
-from config.rides_producer import RidesProducerConfig
+from shared.config.dispatcher import DispatcherConfig
+from shared.config.metrics import MetricsConfig
+from shared.config.rides_producer import RidesProducerConfig
 
 
 class KafkaConfig(BaseSettings):

@@ -1,7 +1,7 @@
 import datetime
 from time import sleep
 
-from config.config import config
+from shared.config.config import config
 from services.rides_producer.loader import load_rides
 from shared.kafka.producer import KafkaProducer
 from shared.models import Ride
