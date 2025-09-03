@@ -2,7 +2,7 @@ import datetime
 
 from services.dispatcher.matching_strategies.strategy_factory import get_strategy
 from shared.config.config import config
-from shared.geo import eta_minutes
+from shared.geo import eta_seconds_from_target
 from shared.kafka import KafkaConsumer
 from shared.logger import logger
 from shared.models import Assignment, Ride, Driver
@@ -63,10 +63,10 @@ def set_drive_busy(ride: Ride, driver: Driver):
     """
     Mark selected-driver as busy
     """
-    pickup_eta = eta_minutes(driver.location, ride.pickup)
-    dropoff_eta = eta_minutes(ride.pickup, ride.dropoff)
-    free_time = redis_client.clock.get() + datetime.timedelta(minutes=pickup_eta + dropoff_eta)
-    redis_client.driver.mark_busy(driver.id, free_time)
+    pickup_eta = driver.location.eta_seconds_from_target(ride.pickup)
+    overall_travel_time = redis_client.clock.get() + datetime.timedelta(seconds=pickup_eta + ride.eta_seconds())
+    redis_client.driver.mark_busy(driver.id, overall_travel_time)
+    logger.info("Driver marked busy", ride_id=ride.id, driver_id=driver.id, eta=overall_travel_time)
 
 
 if __name__ == '__main__':

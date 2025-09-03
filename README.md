@@ -110,7 +110,16 @@ For each consumed ride we want to check if the ride request time (ride.timestamp
 update the clock to be as ride timestamp. After that we free drivers that already passed the clock time. (the flow uses
 the first clock method since this is what we are using).  
 Then we assign a driver to the ride by the chosen strategy (pulling the right strategy using the factory).  
-Then we publish assignment to redis assignments. If no driver is assigned we add the ride id to the unassigned rides.  
+Then we publish assignment to redis assignments. If no driver is assigned we add the ride id to the unassigned rides.
 
+**Redis SDK**
+No need to say why I made it, it's pretty clear. I just want to declare that the reason I didn't inherited the client,
+and instead I pass the controllers of each entity (rides, metrics, drivers, clock) is because I think it's nicer to have
+one endpoint for the sdk instead of making an object for each controller.
 
+## Things I would do next
+
+Add rides and assignments to a DB. I didn't research what's best but from the first view, postgres looks good here since
+our DTOs have relation, and we care about ACID; also postgres have an extension for geo if we ever needed.  
+I would also add drivers' table to store them there, and I would keep the available drivers in redis for fast response.  
 

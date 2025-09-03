@@ -3,7 +3,6 @@ from typing import List, Optional
 
 import redis
 
-from shared.geo import distance
 from shared.logger import logger
 from shared.models import Driver, Location, Drivers
 
@@ -143,4 +142,4 @@ class DriverRedisSDK:
         Return {driver_id: distance_in_km} to the target location.
         """
         locations = self.get_locations(driver_ids)
-        return {did: distance(loc, target) for did, loc in locations.items()}
+        return {did: loc.distance(target) for did, loc in locations.items()}
