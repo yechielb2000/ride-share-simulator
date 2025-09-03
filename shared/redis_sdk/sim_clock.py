@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from sys import exc_info
 
 import redis
 
@@ -20,6 +19,11 @@ class RedisClock:
         """Set the clock to a specific datetime."""
         self._client.set(self.KEY, dt.isoformat())
         logger.info(f"Clock set to {dt.isoformat()}")
+
+    def set_now_once(self):
+        """Set the clock to now but only if the key doesn't exist."""
+        if self._client.get(self.KEY) is None:
+            self.set(datetime.now())
 
     def get(self) -> datetime:
         ts = self._client.get(self.KEY)

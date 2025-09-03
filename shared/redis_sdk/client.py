@@ -1,11 +1,12 @@
-from functools import lru_cache
 import datetime
+from functools import lru_cache
+
 import redis
 
 from config.config import config
-from shared.redis_sdk.sim_clock import RedisClock
 from shared.redis_sdk.driver import DriverRedisSDK
 from shared.redis_sdk.metrics import MetricsRedisSDK
+from shared.redis_sdk.sim_clock import RedisClock
 
 
 class RedisClient:
@@ -27,8 +28,8 @@ class RedisClient:
     @lru_cache
     def clock(self) -> RedisClock:
         clock = RedisClock(self._client)
-        clock.set(redis_client.KEY, datetime.datetime.now().isoformat())
-        return
+        clock.set(datetime.datetime.now())
+        return clock
 
     @property
     @lru_cache
