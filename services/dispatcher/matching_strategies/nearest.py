@@ -9,6 +9,6 @@ class NearestDriverStrategy(MatchingStrategy):
 
     def match(self, ride: Ride, available_drivers: Drivers) -> Optional[Driver]:
         driver_ids = [d.id for d in available_drivers]
-        distances = self.driver_sdk.get_distances(ride.pickup_location, driver_ids)
+        distances = self.driver_sdk.get_distances(ride.pickup, driver_ids)
         best_id = str(min(distances, key=distances.get))
         return self.driver_sdk.get(best_id)

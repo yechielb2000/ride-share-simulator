@@ -62,8 +62,8 @@ def set_drive_busy(ride: Ride, driver: Driver):
     """
     Mark selected-driver as busy
     """
-    pickup_eta = eta_minutes(driver.location, ride.pickup_location)
-    dropoff_eta = eta_minutes(ride.pickup_location, ride.dropoff_location)
+    pickup_eta = eta_minutes(driver.location, ride.pickup)
+    dropoff_eta = eta_minutes(ride.pickup, ride.dropoff)
     free_time = redis_client.clock.get() + datetime.timedelta(minutes=pickup_eta + dropoff_eta)
     redis_client.driver.mark_busy(driver.id, free_time)
 

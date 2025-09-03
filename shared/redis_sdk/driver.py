@@ -4,6 +4,7 @@ from typing import List, Optional
 import redis
 
 from shared.geo import distance
+from shared.logger import logger
 from shared.models import Driver, Location, Drivers
 
 
@@ -36,11 +37,12 @@ class DriverRedisSDK:
     def list_all(self) -> Drivers:
         """Return all drivers."""
         drivers = Drivers()
+
         driver_ids = self._client.smembers("drivers:set")
         for driver_id in driver_ids:
             driver = self.get(driver_id)
             if driver:
-                drivers.append(Driver.model_validate(driver))
+                drivers.append(driver)
         return drivers
 
     def list_available(self) -> Drivers:
@@ -52,7 +54,7 @@ class DriverRedisSDK:
         for driver_id in driver_ids:
             driver = self.get(driver_id)
             if driver:
-                drivers.append(Driver.model_validate(driver))
+                drivers.append(driver)
         return drivers
 
     def list_unavailable(self) -> Drivers:
@@ -79,7 +81,7 @@ class DriverRedisSDK:
                     if not data:
                         pipe.unwatch()
                         return False
-                    driver = Driver.model_validate(data)
+                    driver = Driver.model_validate_json(data)
                     if driver.busy:
                         pipe.unwatch()
                         return False
@@ -94,7 +96,7 @@ class DriverRedisSDK:
                     pipe.execute()
                     return True
                 except redis.WatchError:
-                    pass  # retry transaction
+                    logger.exception("Watch error")
 
     def mark_free(self, driver_id: str) -> bool:
         """
@@ -112,7 +114,7 @@ class DriverRedisSDK:
                     if not data:
                         pipe.unwatch()
                         return False
-                    driver = Driver.load_model(data)
+                    driver = Driver.model_validate_json(data)
                     driver.busy = False
                     driver.eta = None
 
@@ -123,7 +125,7 @@ class DriverRedisSDK:
                     pipe.execute()
                     return True
                 except redis.WatchError:
-                    pass  # retry transaction
+                    logger.exception("Watch error")
 
     def get_locations(self, driver_ids: List[str]) -> dict[int, Location]:
         """
