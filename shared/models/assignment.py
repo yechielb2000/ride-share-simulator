@@ -15,6 +15,9 @@ class Assignment(BaseModel):
         return self.ride_id
 
     def average_pickup_eta_minutes(self) -> float:
+        """
+        Provide average pickup estimated time arrival in minutes.
+        """
         return abs(self.timestamp - self.ride_request_time).total_seconds() / 60
 
 
