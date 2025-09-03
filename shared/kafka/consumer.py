@@ -3,6 +3,8 @@ from typing import TypeVar, Generic, Generator, Type
 from confluent_kafka import Consumer, KafkaException
 from pydantic import BaseModel
 
+from shared.logger import logger
+
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -27,7 +29,8 @@ class KafkaConsumer(Generic[T]):
                     continue
                 if msg.error():
                     raise KafkaException(msg.error())
-
-                yield self.model_cls.model_validate(msg.value().decode())
+                consumed_message_value = msg.value().decode()
+                logger.debug("Consumed record", message=consumed_message_value)
+                yield self.model_cls.model_validate_json(consumed_message_value)
         finally:
             self.consumer.close()

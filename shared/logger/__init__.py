@@ -3,9 +3,10 @@ import sys
 from loguru import logger
 
 FORMAT = (
-    "<green>{time:HH:mm:ss}</green> | "
+    "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
     "<level>{level: <8}</level> | "
-    "<cyan>{name}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+    "{name}:{function}:{line} | "
+    "{message} | extra={extra}"
 )
 logger.remove()
 logger.add(sys.stdout, format=FORMAT)
