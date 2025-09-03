@@ -28,7 +28,7 @@ class RedisClient:
     @lru_cache
     def clock(self) -> RedisClock:
         clock = RedisClock(self._client)
-        clock.set(datetime.datetime.now())
+        clock.set_now_once()
         return clock
 
     @property
