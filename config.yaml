@@ -13,7 +13,7 @@ rides_producer:
 
 dispatcher:
   group_id: "dispatcher"
-  strategy: "nearest"
+  strategy: "weighted"
 
 metrics:
   group_id: "metrics"

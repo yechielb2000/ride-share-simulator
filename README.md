@@ -1,8 +1,65 @@
 # Ride-share-Simulator
 
-## installation Process
+## Set Input Files
 
-First, build the base image for our services:
+> Note: There are already input files, but if you want to set your own, don't skip this step
+
+Place your input files:
+
+- Put `drivers.json` in `services/drivers_loader/`
+- Put `rides.json` in `services/rides_producer/`
+
+_drivers.json_:
+
+```json
+{
+  "drivers": [
+    {
+      "id": "1",
+      "name": "Alice",
+      "vehicle_type": "private",
+      "location": {
+        "lat": 32.0853,
+        "lon": 34.7818
+      },
+      "rating": 4.9
+    },
+    {
+      ...
+    }
+  ]
+}
+```
+
+_rides.json_:
+
+```json
+{
+  "rides": [
+    {
+      "id": "1",
+      "pickup": {
+        "lat": 32.0830,
+        "lon": 34.7805
+      },
+      "dropoff": {
+        "lat": 37.1000,
+        "lon": 36.7900
+      },
+      "vehicle_type": "private",
+      "timestamp": "2025-09-03T15:00:00",
+      "user_rating": 5
+    },
+    {
+      ...
+    }
+  ]
+}
+```
+
+# Setup & Installation
+
+Build the base image for our services:
 
 ````shell
 docker build -f Dockerfile.base -t ride-share-base:latest .
@@ -10,6 +67,7 @@ docker build -f Dockerfile.base -t ride-share-base:latest .
 
 The base image sets global envs, copies the `shared` directory, installing essential binaries, and syncing project
 packages using uv.
+
 Now you can run the services:
 
 ```bash
@@ -18,9 +76,27 @@ docker compose up -d
 
 You can watch the logs of each service to see the records and related logs for the service actions.
 
+**Get a report:**
+
+```bash
+  curl http://localhost:8000/report
+```
+
 ----
 
-## Base Architecture Approach
+# Matching Strategies
+
+The system supports two matching strategies configurable in : `config.yaml`
+
+1. **Nearest Driver** (`strategy: "nearest"`)
+    - Matches rides to drivers based on minimum straight-line distance to pickup location
+    - Best for minimizing pickup times
+
+2. **Weighted Score** () `strategy: "weighted"`
+    - Considers user and drivers ratings
+    - Matches higher-rated users with higher-rated drivers
+
+# Base Architecture Approach
 
 **Drivers Loader**:
 > Loads drivers to redis. Run once at the start.
@@ -39,7 +115,7 @@ You can watch the logs of each service to see the records and related logs for t
 **Metrics Service**:
 > Provides an HTTP endpoint to get the report and metrics
 
-## Detailed Structure
+# Detailed Structure
 
 **Structure**
 
@@ -58,35 +134,35 @@ You can watch the logs of each service to see the records and related logs for t
     - `Metrics` an API for providing reports.
     - `Rides_producer` produce rides for the simulation.
 
-### Design Choices
+## Design Choices
 
-#### infra structure
+### infra structure
 
 The infra structure choices like the base image and shared directory seemed very legit since we don't want to compile
 the same binaries and packages again and again. For the shared directory, in production I would probably make each
 package there as an internal package.
 
-#### Reading from JSON
+### Reading from JSON
 
 I really wanted to generate rides without using the JSON file, but it was required by the assignment.
 I used `ijson` to generate each ride object from the JSON, so I can yield them instead of loading all to memory, (same
 for `drivers loader`).
 
-#### Metrics API
+### Metrics API
 
 I thought it would be much nicer to get the report from an api endpoint instead of getting it from the docker
 containers.  
 So even though you requested to output the JSON file of the report to the filesystem, I hope you could forgive me for
 providing it to use differently :)
 
-#### Kafka Adjusted Objects
+### Kafka Adjusted Objects
 
 Just for reducing code. Pass `BaseModel` bounded generic type for the model_class, and it will consume/produce the
 model.
 
-#### Clock
+### Clock
 
-I was thinking about 2 ways:
+I was thinking about two ways:
 
 1. Marking drivers busy / free via a custom clock that holds time which ticks from ride timestamp to another (The clock
    is not really ticking by "worldwide time"), usage is in the dispatcher since I used this one.
@@ -95,7 +171,7 @@ I was thinking about 2 ways:
 
 Both are adding them back to the available pool.
 
-#### Dispatcher
+### Dispatcher
 
 **Matching strategies**
 The matching strategies are pretty straightforward. You have an interface that shows how each Strategy should look.  
@@ -117,9 +193,8 @@ No need to say why I made it, it's pretty clear. I just want to declare that the
 and instead I pass the controllers of each entity (rides, metrics, drivers, clock) is because I think it's nicer to have
 one endpoint for the sdk instead of making an object for each controller.
 
-## Things I would do next
+# Things I would do next
 
-Add rides and assignments to a DB. I didn't research what's best, but from the first view, postgres looks good here since
-our DTOs have relation, and we care about ACID; also, postgres have an extension for geo if we ever needed.  
+Add rides and assignments to a DB. I didn't research what's best, but from the first view, postgres look good here
+since our DTOs have relation, and we care about ACID; also, postgres have an extension for geo if we ever needed.  
 I would also add drivers' table to store them there, and I would keep the available drivers in redis for fast response.  
-

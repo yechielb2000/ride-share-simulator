@@ -5,10 +5,6 @@ from shared.models import Ride, Driver, Drivers
 
 
 class WeightedScoreStrategy(MatchingStrategy):
-    rating_closeness_factor = 1.0
 
     def match(self, ride: Ride, available_drivers: Drivers) -> Optional[Driver]:
-        return min(
-            available_drivers,
-            key=lambda d: abs(d.rating - ride.user_rating) * self.rating_closeness_factor
-        )
+        return min(available_drivers, key=lambda d: abs(d.rating - ride.user_rating))
