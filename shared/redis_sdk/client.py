@@ -1,5 +1,5 @@
 from functools import lru_cache
-
+import datetime
 import redis
 
 from config.config import config
@@ -26,7 +26,9 @@ class RedisClient:
     @property
     @lru_cache
     def clock(self) -> RedisClock:
-        return RedisClock(self._client)
+        clock = RedisClock(self._client)
+        clock.set(redis_client.KEY, datetime.datetime.now().isoformat())
+        return
 
     @property
     @lru_cache

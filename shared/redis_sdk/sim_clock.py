@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
+from sys import exc_info
 
 import redis
+
+from shared.logger import logger
 
 
 class RedisClock:
@@ -16,6 +19,7 @@ class RedisClock:
     def set(self, dt: datetime):
         """Set the clock to a specific datetime."""
         self._client.set(self.KEY, dt.isoformat())
+        logger.info(f"Clock set to {dt.isoformat()}")
 
     def get(self) -> datetime:
         ts = self._client.get(self.KEY)
@@ -37,4 +41,4 @@ class RedisClock:
                     pipe.execute()
                     return new_time
             except redis.WatchError:
-                pass
+                logger.exception("Watch error")
