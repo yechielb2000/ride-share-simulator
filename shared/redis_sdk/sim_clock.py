@@ -27,9 +27,9 @@ class RedisClock:
 
     def get(self) -> datetime:
         ts = self._client.get(self.KEY)
-        if ts:
-            return datetime.fromisoformat(ts)
-        raise ValueError(f"could not get timestamp from clock (keyname: {self.KEY})")
+        if not ts:
+            raise ValueError(f"could not get timestamp from clock (keyname: {self.KEY})")
+        return datetime.fromisoformat(ts)
 
     def advance(self, delta: timedelta) -> datetime | None:
         """Atomically advance the clock by delta."""
