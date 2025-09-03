@@ -2,7 +2,7 @@
 
 ## installation Process
 
-First build the base image for our services:
+First, build the base image for our services:
 
 ````shell
 docker build -f Dockerfile.base -t ride-share-base:latest .
@@ -37,7 +37,7 @@ You can watch the logs of each service to see the records and related logs for t
 > Publishes assignment to Redis assignments
 
 **Metrics Service**:
-> Provides HTTP endpoint to get the report and metrics
+> Provides an HTTP endpoint to get the report and metrics
 
 ## Detailed Structure
 
@@ -45,7 +45,7 @@ You can watch the logs of each service to see the records and related logs for t
 
 - `Config.yaml` configurable file for the services, [file structure](shared/config/config.py).
 - `Shared` shares sources across all services.
-    - `Config` the configuration schema, instance and loader.
+    - `Config` the configuration schema, instance, and loader.
     - `Kafka` generic interfaces for kafka such as adjusted `kafka consumer` etc...
     - `Logger` setup for logger (I use loguru, great library).
     - `Models` all shared models such ass `Driver`, `Ride` etc...
@@ -98,8 +98,8 @@ Both are adding them back to the available pool.
 #### Dispatcher
 
 **Matching strategies**
-The matching strategies is pretty simple. You have an interface that shows how each Strategy should look.  
-Each new strategy inherits this class and a factory utility helps us choose from StrategyType the right Strategy.
+The matching strategies are pretty straightforward. You have an interface that shows how each Strategy should look.  
+Each new strategy inherits this class, and a factory utility helps us choose from StrategyType the right Strategy.
 We provide the class from the factory, and it gets its kwargs, and then we execute the `.match` function to match rides
 to drivers.
 
@@ -119,7 +119,7 @@ one endpoint for the sdk instead of making an object for each controller.
 
 ## Things I would do next
 
-Add rides and assignments to a DB. I didn't research what's best but from the first view, postgres looks good here since
-our DTOs have relation, and we care about ACID; also postgres have an extension for geo if we ever needed.  
+Add rides and assignments to a DB. I didn't research what's best, but from the first view, postgres looks good here since
+our DTOs have relation, and we care about ACID; also, postgres have an extension for geo if we ever needed.  
 I would also add drivers' table to store them there, and I would keep the available drivers in redis for fast response.  
 
