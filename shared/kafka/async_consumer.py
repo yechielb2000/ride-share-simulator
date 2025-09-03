@@ -1,11 +1,14 @@
 import asyncio
-from confluent_kafka import Consumer, KafkaException
 from typing import AsyncGenerator, TypeVar, Generic
 
-T = TypeVar("T")
+from confluent_kafka import Consumer, KafkaException
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
+
 
 class KafkaAsyncConsumer(Generic[T]):
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: T):
         self.consumer = Consumer({
             "bootstrap.servers": bootstrap_servers,
             "group.id": group_id,
