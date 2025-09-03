@@ -28,8 +28,7 @@ class RedisClock:
     def get(self) -> datetime:
         ts = self._client.get(self.KEY)
         if ts:
-            if isinstance(ts, bytes):
-                return datetime.fromisoformat(ts.decode())
+            return datetime.fromisoformat(ts)
         raise ValueError(f"could not get timestamp from clock (keyname: {self.KEY})")
 
     def advance(self, delta: timedelta) -> datetime | None:
