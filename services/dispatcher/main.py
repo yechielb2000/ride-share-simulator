@@ -52,8 +52,9 @@ def set_drivers_free():
     """
     set free drivers that are no longer busy
     """
-    for driver in redis_client.driver.list_all():
-        if driver.busy and driver.eta and driver.eta <= redis_client.clock.get():
+    for driver in redis_client.driver.list_unavailable():
+        # not sure if I need to check for driver.eta but for the sake of it...
+        if driver.eta and driver.eta <= redis_client.clock.get():
             redis_client.driver.mark_free(driver.id)
 
 
