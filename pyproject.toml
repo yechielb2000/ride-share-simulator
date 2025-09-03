@@ -1,0 +1,17 @@
+[project]
+name = "ride-share-simulator"
+version = "0.1.0"
+description = "match rides and drivers"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "confluent-kafka>=2.11.1",
+    "fastapi>=0.116.1",
+    "ijson>=3.4.0",
+    "loguru>=0.7.3",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+    "pyyaml>=6.0.2",
+    "redis>=6.4.0",
+    "uvicorn>=0.35.0",
+]
