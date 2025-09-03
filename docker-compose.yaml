@@ -71,7 +71,9 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
-    command: [ "redis-server", "--save", "60", "1" ]
+    # NOTE: I disabled persistence (appendonly=no, save="") for easier testing.
+    # I'm aware that this  should NOT be done in production where data persistence is critical.
+    command: [ "redis-server", "--appendonly", "no", "--save", "" ]
 
 volumes:
   kafka_data:

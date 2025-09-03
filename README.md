@@ -197,4 +197,4 @@ one endpoint for the sdk instead of making an object for each controller.
 
 Add rides and assignments to a DB. I didn't research what's best, but from the first view, postgres look good here
 since our DTOs have relation, and we care about ACID; also, postgres have an extension for geo if we ever needed.  
-I would also add drivers' table to store them there, and I would keep the available drivers in redis for fast response.  
+I would also add drivers' table to store them there, and I would keep the available drivers in redis for fast response.
