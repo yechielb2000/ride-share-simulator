@@ -2,10 +2,9 @@ import datetime
 
 from services.dispatcher.matching_strategies.strategy_factory import get_strategy
 from shared.config.config import config
-from shared.geo import eta_seconds_from_target
 from shared.kafka import KafkaConsumer
 from shared.logger import logger
-from shared.models import Assignment, Ride, Driver
+from shared.models import Ride, Driver, Assignment
 from shared.redis_sdk import redis_client
 
 ride_consumer = KafkaConsumer[Ride](
@@ -38,15 +37,7 @@ def main():
             redis_client.metrics.add_unassigned(ride_id=ride.id)
             continue
 
-        set_drive_busy(ride, selected_driver)
-        assignment = Assignment(
-            ride_id=ride.id,
-            ride_request_time=ride.timestamp,
-            driver_id=selected_driver.id,
-            timestamp=redis_client.clock.get()
-        )
-        redis_client.metrics.add_assignment(assignment)
-        logger.info("Ride was assigned to driver", ride_id=ride.id, driver_id=selected_driver.id)
+        assign(ride, selected_driver)
 
 
 def set_drivers_free():
@@ -63,10 +54,28 @@ def set_drive_busy(ride: Ride, driver: Driver):
     """
     Mark selected-driver as busy
     """
-    pickup_eta = driver.location.eta_seconds_from_target(ride.pickup)
-    overall_travel_time = redis_client.clock.get() + datetime.timedelta(seconds=pickup_eta + ride.eta_seconds())
+    overall_travel_time = get_pickup_eta(ride, driver) + datetime.timedelta(seconds=ride.eta_seconds())
     redis_client.driver.mark_busy(driver.id, overall_travel_time)
     logger.info("Driver marked busy", ride_id=ride.id, driver_id=driver.id, eta=overall_travel_time)
+
+
+def get_pickup_eta(ride: Ride, driver: Driver) -> datetime.datetime:
+    pickup_eta = driver.location.eta_seconds_from_target(ride.pickup)
+    return ride.timestamp + datetime.timedelta(seconds=pickup_eta)
+
+
+def assign(ride: Ride, selected_driver: Driver):
+    pickup_eta = get_pickup_eta(ride, selected_driver)
+
+    assignment = Assignment(
+        ride_id=ride.id,
+        ride_request_time=ride.timestamp,
+        driver_id=selected_driver.id,
+        timestamp=pickup_eta
+    )
+    redis_client.metrics.add_assignment(assignment)
+    set_drive_busy(ride, selected_driver)
+    logger.info("Ride was assigned to driver", ride_id=ride.id, driver_id=selected_driver.id)
 
 
 if __name__ == '__main__':

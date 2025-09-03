@@ -14,8 +14,6 @@ rides_producer:
 dispatcher:
   group_id: "dispatcher"
   strategy: "nearest"
-  producer:
-    topic: "assignments"
 
 metrics:
   group_id: "metrics"

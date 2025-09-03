@@ -2,7 +2,6 @@ import datetime
 
 from pydantic import BaseModel, Field
 
-from shared.geo import eta_seconds_from_target
 from shared.models import Location, VehicleType
 
 

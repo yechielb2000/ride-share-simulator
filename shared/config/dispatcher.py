@@ -8,11 +8,6 @@ class StrategyType(str, Enum):
     WEIGHTED = 'weighted'
 
 
-class DispatcherProducer(BaseSettings):
-    topic: str = "assignments"
-
-
 class DispatcherConfig(BaseSettings):
     group_id: str = "dispatcher"
-    producer: DispatcherProducer = DispatcherProducer()
     strategy: StrategyType

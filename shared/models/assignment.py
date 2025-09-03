@@ -7,7 +7,7 @@ class Assignment(BaseModel):
     ride_id: str
     driver_id: str
     timestamp: datetime.datetime
-    ride_request_time: datetime.datetime  # since requesting it from db, just for this is non-efficient; I save it here too.
+    ride_request_time: datetime.datetime
 
     @property
     def id(self):

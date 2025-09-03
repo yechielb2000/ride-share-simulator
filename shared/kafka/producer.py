@@ -13,7 +13,7 @@ class KafkaProducer(Generic[T]):
         self.producer = Producer({"bootstrap.servers": bootstrap_servers})
         self.topic = topic
 
-    def send(self, item: type[T], callback: Callable = None):
+    def send(self, item: T, callback: Callable = None):
         """
         Produce a generic Pydantic model to Kafka.
         """
