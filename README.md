@@ -1,6 +1,21 @@
 # Ride-share-Simulator
 
-## Set Input Files
+A simulation system for ride-sharing services that demonstrates driver-to-ride matching strategies.
+
+## Development Setup
+
+This project uses Docker Compose for local development and testing. The setup includes:
+
+- Redis for in-memory data storage (configured to flush data on restart for testing purposes)
+- Kafka for message queuing
+- Multiple Python microservices handling different aspects of the simulation
+
+> **⚠️ Development Note**:
+> The current Redis configuration is optimized for development and testing, where we automatically flush data between
+> restarts and disable persistence. This makes testing and development iterations faster and cleaner. In a production
+> environment, you would want to enable data persistence and manage data lifecycle differently.
+
+## Input Files
 
 > Note: There are already input files, but if you want to set your own, don't skip this step
 
@@ -9,7 +24,8 @@ Place your input files:
 - Put `drivers.json` in `services/drivers_loader/`
 - Put `rides.json` in `services/rides_producer/`
 
-_drivers.json_:
+<details>
+  <summary>drivers.json content format</summary>
 
 ```json
 {
@@ -31,7 +47,10 @@ _drivers.json_:
 }
 ```
 
-_rides.json_:
+</details>
+
+<details>
+  <summary>rides.json content format</summary>
 
 ```json
 {
@@ -56,6 +75,8 @@ _rides.json_:
   ]
 }
 ```
+
+</details>
 
 # Setup & Installation
 
@@ -99,21 +120,25 @@ The system supports two matching strategies configurable in : `config.yaml`
 # Base Architecture Approach
 
 **Drivers Loader**:
-> Loads drivers to redis. Run once at the start.
+
+- Loads drivers to redis. Run once at the start.
 
 **Rides Producer**:
-> Reads rides.json and Publishes to Kafka under `ride_requests` topic.  
-> Uses Redis `sim_clock` to simulate timestamps
+
+- Reads rides.json and Publishes to Kafka under `ride_requests` topic.
+- Uses Redis `sim_clock` to simulate timestamps
 
 **Dispatcher(s)**:
-> Consumes ride_requests from Kafka
-> Checks `ride.timestamp <= sim_clock`
-> Updates driver state in Redis
-> Assigns drivers using strategy
-> Publishes assignment to Redis assignments
+
+- Consumes ride_requests from Kafka
+- Checks `ride.timestamp <= sim_clock`
+- Updates driver state in Redis
+- Assigns drivers using strategy
+- Publishes assignment to Redis assignments
 
 **Metrics Service**:
-> Provides an HTTP endpoint to get the report and metrics
+
+- Provides an HTTP endpoint to get the report and metrics
 
 # Detailed Structure
 
