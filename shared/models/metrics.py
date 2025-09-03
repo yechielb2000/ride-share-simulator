@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from shared.models import Assignments
 
@@ -8,6 +8,8 @@ class Metrics(BaseModel):
 
 
 class Report(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     assignments: Assignments = Assignments()
     unassigned_rides: list[str] = []
     metrics: Metrics = Metrics()

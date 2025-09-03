@@ -4,7 +4,7 @@ from typing import List, Optional
 import redis
 
 from shared.geo import distance
-from shared.models import Driver, Location, Drivers, VehicleType
+from shared.models import Driver, Location, Drivers
 
 
 class DriverRedisSDK:

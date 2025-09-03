@@ -8,6 +8,14 @@ services:
       - kafka
       - redis
 
+  dispatcher:
+    build:
+      context: .
+      dockerfile: services/dispatcher/Dockerfile
+    depends_on:
+      - kafka
+      - redis
+
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
@@ -26,6 +34,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_NUM_PARTITIONS: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+      # just telling kafka to use 1 broker, I don't really need more than that for the assigment
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     volumes:
       - kafka_data:/var/lib/kafka/data
 

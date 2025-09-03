@@ -3,7 +3,9 @@ from functools import lru_cache
 import redis
 
 from config.config import config
-from shared.redis_sdk import DriverRedisSDK, MetricsRedisSDK, RedisClock
+from shared.redis_sdk.sim_clock import RedisClock
+from shared.redis_sdk.driver import DriverRedisSDK
+from shared.redis_sdk.metrics import MetricsRedisSDK
 
 
 class RedisClient:
