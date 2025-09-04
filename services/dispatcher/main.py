@@ -70,6 +70,7 @@ def assign(ride: Ride, selected_driver: Driver):
         pickup_time=get_pickup_eta(ride, selected_driver)
     )
     redis_client.metrics.add_assignment(assignment)
+    redis_client.metrics.remove_unassigned(ride.id)
     set_drive_busy(ride, selected_driver)
     logger.info("Ride was assigned to driver", ride_id=ride.id, driver_id=selected_driver.id)
 

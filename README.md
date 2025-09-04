@@ -9,14 +9,14 @@ obvious reason that you cannot ask for a ride where the requested ride time was 
 the testing, I did not force it with the type `FutureDatetime` only for me to update its request ride time randomly
 after the current time. It's ofcourse only to make the testing nicer. In the real world It will fail to get the request.
 
-> Note: There are already input files, but if you want to set your own, don't skip this step
-> Place your input files:
+> Note: There are already input files, but if you want to set your own, don't skip this step, the input files are not
+> mounted and are not meant to be changed in run time. For any change you should build the image of the services you
+> changed the files for.
 
-- Put `drivers.json` in `services/drivers_loader/`
-- Put `rides.json` in `services/rides_producer/`
+Place your input files:
 
 <details>
-  <summary>drivers.json content format</summary>
+  <summary>Put `drivers.json` in `services/drivers_loader/`</summary>
 
 ```json
 {
@@ -41,7 +41,7 @@ after the current time. It's ofcourse only to make the testing nicer. In the rea
 </details>
 
 <details>
-  <summary>rides.json content format</summary>
+  <summary>Put `rides.json` in `services/rides_producer/`</summary>
 
 ```json
 {
@@ -71,14 +71,16 @@ after the current time. It's ofcourse only to make the testing nicer. In the rea
 
 # Setup & Installation
 
-Build the base image for our services:
+**Build the base image.**  
+The base image sets global envs, copies the `shared` directory, installing essential binaries, and syncing project
+packages using uv.
+Since we don't want to compile the same binaries and packages again and again. For the shared directory, in production I
+would probably make each package there as an internal package.
+For each time you change anything in `shared` dir you should rebuild this.
 
 ````shell
 docker build -f Dockerfile.base -t ride-share-base:latest .
 ````
-
-The base image sets global envs, copies the `shared` directory, installing essential binaries, and syncing project
-packages using uv.
 
 Now you can run the services:
 
@@ -88,10 +90,14 @@ docker compose up -d
 
 You can watch the logs of each service to see the records and related logs for the service actions.
 
+```shell
+docker logs -f container-name
+```
+
 **Get a report:**
 
-```bash
-  curl http://localhost:8000/report
+```http request
+http://localhost:8000/report
 ```
 
 ----
@@ -104,7 +110,7 @@ The system supports two matching strategies configurable in : `config.yaml`
     - Matches rides to drivers based on minimum straight-line distance to pickup location
     - Best for minimizing pickup times
 
-2. **Weighted Score** () `strategy: "weighted"`
+2. **Weighted Score** (`strategy: "weighted"`)
     - Considers user and drivers ratings
     - Matches higher-rated users with higher-rated drivers
 
@@ -139,10 +145,6 @@ This project uses Docker Compose for local development and testing. The setup in
     - `clock/` Provides a ticking mechanism to simulate time (used for freeing drivers when the estimated_travel_time >=
       clock_time). Note that the clock is set to UTC tz (if you add ride, it should come with UTC tz)
     - `rides_producer/` produce rides for the simulation.
-
-The infra structure choices like the base image and shared directory seemed very legit since we don't want to compile
-the same binaries and packages again and again. For the shared directory, in production I would probably make each
-package there as an internal package.
 
 ### Redis SDK
 

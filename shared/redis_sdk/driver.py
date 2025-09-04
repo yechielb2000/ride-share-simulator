@@ -3,7 +3,6 @@ from typing import List, Optional
 
 import redis
 
-from shared.logger import logger
 from shared.models import Driver, Location, Drivers
 
 

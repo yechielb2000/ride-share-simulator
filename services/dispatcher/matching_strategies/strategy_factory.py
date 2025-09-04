@@ -1,7 +1,7 @@
-from shared.config.dispatcher import StrategyType
 from services.dispatcher.matching_strategies.nearest import NearestDriverStrategy
 from services.dispatcher.matching_strategies.strategy import MatchingStrategy
 from services.dispatcher.matching_strategies.weighted import WeightedScoreStrategy
+from shared.config.dispatcher import StrategyType
 
 STRATEGIES: dict[StrategyType, type[MatchingStrategy]] = {
     StrategyType.NEAREST: NearestDriverStrategy,
