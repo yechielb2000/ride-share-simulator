@@ -13,7 +13,7 @@ async def get_report():
 
 
 @app.get("/assignments")
-async def get_report():
+async def get_assignments():
     return redis_client.metrics.list_assignments()
 
 

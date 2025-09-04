@@ -1,6 +1,7 @@
+import datetime
 from typing import Optional, Self, Iterable
 
-from pydantic import BaseModel, Field, FutureDatetime
+from pydantic import BaseModel, Field
 
 from shared.models import Location, VehicleType
 
@@ -11,7 +12,7 @@ class Driver(BaseModel):
     vehicle_type: VehicleType
     busy: bool = False
     location: Location
-    eta: Optional[FutureDatetime] = None
+    eta: Optional[datetime.datetime] = None
     rating: float = Field(..., ge=0, le=5)
 
 
@@ -22,7 +23,6 @@ class Drivers(list[Driver]):
 
     def __sub__(self, other: Iterable[Driver]) -> Self:
         """
-        Return a new Drivers instance containing drivers in self and not in the other.
         Comparison is by driver.id.
         """
         other_ids = {driver.id for driver in other}

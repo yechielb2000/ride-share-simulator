@@ -20,7 +20,6 @@ class MetricsRedisSDK:
         Add a new assignment.
         - Store assignment JSON in a hash (by ID).
         - Store ID in sorted set by timestamp for ordering.
-        Atomic via MULTI/EXEC.
         """
         key_assignments = "metrics:assignments"
         key_hash = f"metrics:assignment:{assignment.id}"
@@ -66,5 +65,5 @@ class MetricsRedisSDK:
         return Report(
             assignments=assignments,
             unassigned_rides=unassigned,
-            metrics=Metrics(avg_pickup_eta_minutes=avg_eta),
+            metrics=Metrics(avg_pickup_eta=avg_eta),
         )

@@ -4,7 +4,7 @@ from shared.models import Assignments
 
 
 class Metrics(BaseModel):
-    avg_pickup_eta_minutes: float = 0.0
+    avg_pickup_eta: float = 0.0
 
 
 class Report(BaseModel):

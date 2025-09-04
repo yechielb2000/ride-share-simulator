@@ -2,24 +2,15 @@
 
 A simulation system for ride-sharing services that demonstrates driver-to-ride matching strategies.
 
-## Development Setup
-
-This project uses Docker Compose for local development and testing. The setup includes:
-
-- Redis for in-memory data storage (configured to flush data on restart for testing purposes)
-- Kafka for message queuing
-- Multiple Python microservices handling different aspects of the simulation
-
-> **⚠️ Development Note**:
-> The current Redis configuration is optimized for development and testing, where we automatically flush data between
-> restarts and disable persistence. This makes testing and development iterations faster and cleaner. In a production
-> environment, you would want to enable data persistence and manage data lifecycle differently.
-
 ## Input Files
 
-> Note: There are already input files, but if you want to set your own, don't skip this step
+**Important**. When you provide JSON of rides, the ride **must have a future datetime** in its timestamp, for the
+obvious reason that you cannot ask for a ride where the requested ride time was already passed. To make it easier for
+the testing, I did not force it with the type `FutureDatetime` only for me to update its request ride time randomly
+after the current time. It's ofcourse only to make the testing nicer. In the real world It will fail to get the request.
 
-Place your input files:
+> Note: There are already input files, but if you want to set your own, don't skip this step
+> Place your input files:
 
 - Put `drivers.json` in `services/drivers_loader/`
 - Put `rides.json` in `services/rides_producer/`
@@ -117,51 +108,37 @@ The system supports two matching strategies configurable in : `config.yaml`
     - Considers user and drivers ratings
     - Matches higher-rated users with higher-rated drivers
 
-# Base Architecture Approach
+# Architecture & Design
 
-**Drivers Loader**:
+This project uses Docker Compose for local development and testing. The setup includes:
 
-- Loads drivers to redis. Run once at the start.
+- Redis for in-memory data storage (configured to flush data on restart for testing purposes)
+- Kafka for message queuing
+- Multiple Python microservices handling different aspects of the simulation
 
-**Rides Producer**:
-
-- Reads rides.json and Publishes to Kafka under `ride_requests` topic.
-- Uses Redis `sim_clock` to simulate timestamps
-
-**Dispatcher(s)**:
-
-- Consumes ride_requests from Kafka
-- Checks `ride.timestamp <= sim_clock`
-- Updates driver state in Redis
-- Assigns drivers using strategy
-- Publishes assignment to Redis assignments
-
-**Metrics Service**:
-
-- Provides an HTTP endpoint to get the report and metrics
-
-# Detailed Structure
+> **⚠️ Development Note**:
+> The current Redis configuration is optimized for development and testing, where we automatically flush data between
+> restarts and disable persistence. In a production environment, you would want to enable data persistence and manage
+> data lifecycle differently.
 
 **Structure**
 
-- `Config.yaml` configurable file for the services, [file structure](shared/config/config.py).
-- `Shared` shares sources across all services.
-    - `Config` the configuration schema, instance, and loader.
-    - `Kafka` generic interfaces for kafka such as adjusted `kafka consumer` etc...
-    - `Logger` setup for logger (I use loguru, great library).
-    - `Models` all shared models such ass `Driver`, `Ride` etc...
-    - `redis_sdk` manages actions for us. holding drivers, assignment, metrics, etc...
-    - `Files` generic actions for files, specifics yielding models from JSON files.
-    - `GEO` geo utils such as measure distance and estimated arrival time.
-- `Services` services sits here.
-    - `Dispatcher` consumes rides and assigns them to drivers.
-    - `Drivers_loader` load drivers to redis (once).
-    - `Metrics` an API for providing reports.
-    - `Rides_producer` produce rides for the simulation.
-
-## Design Choices
-
-### infra structure
+- `config.yaml` configurable file for the services, [file structure](shared/config/config.py).
+- `Dockerfile.base` the base ride-share-simulator image for our services.
+- `shared/` shares sources across all services.
+    - `config/` the configuration schema, instance, and loader.
+    - `kafka/` generic interfaces for kafka such as adjusted `kafka consumer` etc...
+    - `logger/` setup for logger (I use loguru, great library).
+    - `models/` all shared models such ass `Driver`, `Ride` etc...
+    - `redis_sdk/` manages actions for us. holding drivers, assignment, metrics, etc...
+    - `files.py` generic actions for files, specifics yielding models from JSON files.
+- `services/` services sits here.
+    - `dispatcher/` consumes rides and assigns them to drivers.
+    - `drivers_loader/` load drivers to redis (once).
+    - `metrics/` an API for providing reports.
+    - `clock/` Provides a ticking mechanism to simulate time (used for freeing drivers when the estimated_travel_time >=
+      clock_time). Note that the clock is set to UTC tz (if you add ride, it should come with UTC tz)
+    - `rides_producer/` produce rides for the simulation.
 
 The infra structure choices like the base image and shared directory seemed very legit since we don't want to compile
 the same binaries and packages again and again. For the shared directory, in production I would probably make each
@@ -169,52 +146,40 @@ package there as an internal package.
 
 ### Redis SDK
 
-No need to say why I made it, it's pretty clear. I just want to declare that the reason I didn't inherited the client,
-and instead I pass the controllers of each entity (rides, metrics, drivers, clock) is because I think it's nicer to have
-one endpoint for the sdk instead of making an object for each controller.
+The reason I didn't inherit the client, and instead I pass the controllers of each entity (rides, metrics, drivers,
+clock) is because I think it's nicer to have one endpoint for the sdk instead of making an object for each controller.
 
 ### Reading from JSON
 
-I really wanted to generate rides without using the JSON file, but it was required by the assignment.
 I used `ijson` to generate each ride object from the JSON, so I can yield them instead of loading all to memory, (same
 for `drivers loader`).
 
 ### Metrics API
 
-I thought it would be much nicer to get the report from an api endpoint instead of getting it from the docker
-containers.  
-So even though you requested to output the JSON file of the report to the filesystem, I hope you could forgive me for
-providing it to use differently :)
+The report is provided via an API.
+
+```http request
+localhost:8000/report
+```
 
 ### Kafka Adjusted Objects
 
-Just for reducing code. Pass `BaseModel` bounded generic type for the model_class, and it will consume/produce the
-model.
-
-### Clock
-
-I was thinking about two ways:
-
-1. Marking drivers busy / free via a custom clock that ticks configurably. "THIS IS THE USED ONE"
-2. Marking drivers as busy in Redis with a TTL (with estimation of completion time). When the TTL expires, a background
-   service listens to Redis keyspace notifications and automatically marks the driver as free,
-
-Both are adding them back to the available pool.
-
-> 🔴 Important: the clock is set to UTC tz (if you add ride, it should come with UTC tz)
+For reducing code. I made generic consumer and producer on a given Generic type bounded by BaseModel.
 
 ### Dispatcher
 
 **Matching strategies**
-The matching strategies are pretty straightforward. You have an interface that shows how each Strategy should look.  
-Each new strategy inherits this class, and a factory utility helps us choose from StrategyType the right Strategy.
-We provide the class from the factory, and it gets its kwargs, and then we execute the `.match` function to match rides
+The matching strategies are pretty straightforward. You have an interface that shows how strategies should look.  
+Each new strategy inherits this class, and a factory utility provides the wanted strategy given via the config file.
+We provide the class from the factory, and then we execute the `.match` function to match rides
 to drivers.
 
 **Dispatcher Flow**
-Consumes rides, check if there are available drivers for this ride, check strategy, assign ride.
 
-# Things I would do next
+Consumes rides, check if there are available drivers for this ride, fileter available drivers by the vehicle type, match
+by strategy, assign a ride.
+
+# Things I could do next
 
 Add rides and assignments to a DB. I didn't research what's best, but from the first view, postgres look good here
 since our DTOs have relation, and we care about ACID; also, postgres have an extension for geo if we ever needed.  
