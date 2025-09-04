@@ -13,7 +13,7 @@ def main():
     for ride in load_models_from_json(config.rides_producer.json_file, "rides", Ride):
         # I do this only to simulate random requests ride time
         sleep(config.rides_producer.sim_speed)
-        random_seconds  = secrets.randbelow(11) + 5
+        random_seconds  = secrets.randbelow(16) + 5 # get range 5-20
         random_delta = datetime.timedelta(seconds=random_seconds )
         ride.timestamp = datetime.datetime.now(datetime.UTC) + random_delta
 

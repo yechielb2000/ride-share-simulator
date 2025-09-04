@@ -14,28 +14,27 @@ class RedisClient:
     _instance: Self | None = None
     _lock: threading.Lock = threading.Lock()
 
-    def __init__(self, host: str, port: int, db: int):
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._init_pool()
+
+    def _init_pool(self):
         self._pool = redis.ConnectionPool(
-            host=host,
-            port=port,
-            db=db,
+            host=config.redis.host,
+            port=config.redis.port,
+            db=config.redis.db,
             decode_responses=True,
         )
         self._driver = DriverRedisSDK(self._pool)
         self._clock = RedisClock(self._pool)
         self._metrics = MetricsRedisSDK(self._pool)
-        self._lock = threading.Lock()
 
     @classmethod
     def instance(cls) -> Self:
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = cls(
-                        host=config.redis.host,
-                        port=config.redis.port,
-                        db=config.redis.db,
-                    )
+                    cls._instance = cls()
         return cls._instance
 
     @property
@@ -50,16 +49,7 @@ class RedisClient:
                     current_port != config.redis.port or
                     current_db != config.redis.db):
                 logger.debug("Recreating Redis connection pool")
-                self._pool = redis.ConnectionPool(
-                    host=config.redis.host,
-                    port=config.redis.port,
-                    db=config.redis.db,
-                    decode_responses=True,
-                )
-                self._driver = DriverRedisSDK(self._pool)
-                self._clock = RedisClock(self._pool)
-                self._metrics = MetricsRedisSDK(self._pool)
-
+                self._init_pool()
         return self._pool
 
     @property
@@ -84,8 +74,4 @@ class RedisClient:
         self.close()
 
 
-def get_client() -> RedisClient:
-    return RedisClient.instance()
-
-
-redis_client = get_client()
+redis_client = RedisClient.instance()
