@@ -2,8 +2,7 @@ import json
 
 import redis
 
-from shared.models import Assignment, Assignments
-from shared.models.metrics import Report, Metrics
+from shared.models import Assignment, Assignments, Metrics, Report
 
 
 class MetricsRedisSDK:

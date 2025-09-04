@@ -2,8 +2,9 @@ import threading
 
 import inotify.adapters
 import inotify.constants
+from pydantic import ValidationError
 
-from shared.config.config import AppConfig, config, CONFIG_PATH
+from shared.config.config import CONFIG_PATH, AppConfig, config
 from shared.logger import logger
 
 
@@ -24,7 +25,7 @@ class ConfigWatcher:
                     logger.info(f"Config file changed: {filename}")
                     try:
                         self.cfg.__class__.reload_config()
-                    except Exception as e:
+                    except (ValidationError, ValueError) as e:
                         logger.error(f"Error reloading config: {e}")
 
     def start(self):

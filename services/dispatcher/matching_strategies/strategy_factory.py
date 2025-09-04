@@ -12,5 +12,6 @@ STRATEGIES: dict[StrategyType, type[MatchingStrategy]] = {
 def get_strategy(strategy_type: StrategyType) -> type[MatchingStrategy]:
     strategy = STRATEGIES.get(strategy_type)
     if not strategy:
-        raise ValueError('strategy_type must be one of {}'.format(STRATEGIES.keys()))
+        msg = f"strategy_type must be one of {STRATEGIES.keys()}"
+        raise ValueError(msg)
     return strategy

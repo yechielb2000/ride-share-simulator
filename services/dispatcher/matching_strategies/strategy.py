@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from shared.models import Ride, Driver
+from shared.models import Driver, Ride
 from shared.models.driver import Drivers
 
 
@@ -14,4 +14,4 @@ class MatchingStrategy(ABC):
         """
         Given a ride and available drivers, return the best available driver or None.
         """
-        raise NotImplementedError('please implement match')
+        raise NotImplementedError

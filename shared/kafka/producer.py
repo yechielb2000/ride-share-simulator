@@ -1,26 +1,24 @@
-from typing import TypeVar, Generic, Callable
+from collections.abc import Callable
 
 from confluent_kafka import Producer
 from pydantic import BaseModel
 
 from shared.logger import logger
 
-T = TypeVar("T", bound=BaseModel)
 
-
-class KafkaProducer(Generic[T]):
+class KafkaProducer:
     def __init__(self, bootstrap_servers: str, topic: str):
         self.producer = Producer({"bootstrap.servers": bootstrap_servers})
         self.topic = topic
 
-    def send(self, item: T, callback: Callable = None):
+    def send(self, item: BaseModel, callback: Callable | None = None):
         """
         Produce a generic Pydantic model to Kafka.
         """
         self.producer.produce(
             topic=self.topic,
             value=item.model_dump_json(),
-            callback=callback or self.__delivery_report
+            callback=callback or self.__delivery_report,
         )
         self.producer.flush()
 

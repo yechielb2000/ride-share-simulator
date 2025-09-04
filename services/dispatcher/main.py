@@ -4,10 +4,10 @@ from services.dispatcher.matching_strategies.strategy_factory import get_strateg
 from shared.config.config import config
 from shared.kafka import KafkaConsumer
 from shared.logger import logger
-from shared.models import Ride, Driver, Assignment
+from shared.models import Assignment, Driver, Ride
 from shared.redis_sdk import redis_client
 
-ride_consumer = KafkaConsumer[Ride](
+ride_consumer = KafkaConsumer(
     bootstrap_servers=config.kafka.bootstrap_servers,
     group_id=config.dispatcher.group_id,
     topic=config.rides_producer.topic,
@@ -33,7 +33,7 @@ def main():
             redis_client.metrics.add_unassigned(ride_id=ride.id)
             continue
 
-        selected_driver = strategy(redis_client.driver).match(ride, available_drivers)
+        selected_driver = strategy().match(ride, available_drivers)
         if not selected_driver:
             logger.info("No suitable driver found for ride", ride_id=ride.id)
             redis_client.metrics.add_unassigned(ride_id=ride.id)
@@ -67,7 +67,7 @@ def assign(ride: Ride, selected_driver: Driver):
         ride_id=ride.id,
         ride_request_time=ride.timestamp,
         driver_id=selected_driver.id,
-        pickup_time=get_pickup_eta(ride, selected_driver)
+        pickup_time=get_pickup_eta(ride, selected_driver),
     )
     redis_client.metrics.add_assignment(assignment)
     redis_client.metrics.remove_unassigned(ride.id)
@@ -75,5 +75,5 @@ def assign(ride: Ride, selected_driver: Driver):
     logger.info("Ride was assigned to driver", ride_id=ride.id, driver_id=selected_driver.id)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

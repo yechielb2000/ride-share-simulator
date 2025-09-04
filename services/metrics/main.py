@@ -17,5 +17,5 @@ async def get_assignments():
     return redis_client.metrics.list_assignments()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run(app, host=config.metrics.host, port=config.metrics.port)

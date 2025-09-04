@@ -8,8 +8,8 @@ DEFAULT_SPEED_KMH = 30.0  # as per assignment
 
 
 class VehicleType(str, Enum):
-    PRIVATE = 'private'
-    SUV = 'suv'
+    PRIVATE = "private"
+    SUV = "suv"
 
 
 class Location(BaseModel):

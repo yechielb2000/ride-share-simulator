@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 import redis
 
@@ -23,7 +22,7 @@ class DriverRedisSDK:
             pipe.sadd("drivers:available", driver.id)
         pipe.execute()
 
-    def get(self, driver_id: str) -> Optional[Driver]:
+    def get(self, driver_id: str) -> Driver | None:
         """Get a driver by ID."""
         data = self.client.get(f"driver:{driver_id}")
         if data:
@@ -53,7 +52,7 @@ class DriverRedisSDK:
         available_ids = self.list_available()
         return all_driver_ids - available_ids
 
-    def mark_busy(self, driver_id: int, free_time: datetime) -> bool:
+    def mark_busy(self, driver_id: int, free_time: datetime):
         """
         Mark the driver as busy and set free_time.
         Removes a driver from the available set.
@@ -68,11 +67,11 @@ class DriverRedisSDK:
                     data = pipe.get(key_driver)
                     if not data:
                         pipe.unwatch()
-                        return False
+                        break
                     driver = Driver.model_validate_json(data)
                     if driver.busy:
                         pipe.unwatch()
-                        return False
+                        break
 
                     driver.busy = True
                     driver.eta = free_time
@@ -82,11 +81,11 @@ class DriverRedisSDK:
                     pipe.set(key_free_time, free_time.isoformat())
                     pipe.srem("drivers:available", driver_id)
                     pipe.execute()
-                    return True
+                    break
                 except redis.WatchError:
                     pass
 
-    def mark_free(self, driver_id: str) -> bool:
+    def mark_free(self, driver_id: str):
         """
         Mark the driver as free and re-add to the available set.
         Deletes the free_time key.
@@ -101,7 +100,7 @@ class DriverRedisSDK:
                     data = pipe.get(key_driver)
                     if not data:
                         pipe.unwatch()
-                        return False
+                        break
                     driver = Driver.model_validate_json(data)
                     driver.busy = False
                     driver.eta = None
@@ -111,6 +110,6 @@ class DriverRedisSDK:
                     pipe.delete(key_free_time)
                     pipe.sadd("drivers:available", driver_id)
                     pipe.execute()
-                    return True
+                    break
                 except redis.WatchError:
                     pass

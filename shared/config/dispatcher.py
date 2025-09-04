@@ -4,8 +4,8 @@ from pydantic_settings import BaseSettings
 
 
 class StrategyType(str, Enum):
-    NEAREST = 'nearest'
-    WEIGHTED = 'weighted'
+    NEAREST = "nearest"
+    WEIGHTED = "weighted"
 
 
 class DispatcherConfig(BaseSettings):

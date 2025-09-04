@@ -39,19 +39,26 @@ class AppConfig(BaseSettings):
     _lock: threading.Lock = PrivateAttr(default_factory=threading.Lock)
 
     @classmethod
+    def instance(cls) -> Self:
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls.from_yaml()
+        return cls._instance
+
+    @classmethod
     def reload_config(cls):
         with cls._lock:
-            new_config = cls.from_yaml()
-            global config
-            config = new_config
+            cls._instance = cls.from_yaml()
             logger.info("Configuration reloaded successfully")
 
     @classmethod
     def from_yaml(cls, path: Path = CONFIG_PATH):
         if not path.exists():
-            raise FileNotFoundError(f"Config file not found: {path}")
+            msg = f"Config file not found: {path}"
+            raise FileNotFoundError(msg)
 
-        with open(path) as f:
+        with Path.open(path) as f:
             cfg = yaml.safe_load(f)
 
         return cls(
@@ -65,4 +72,8 @@ class AppConfig(BaseSettings):
         )
 
 
-config: AppConfig = AppConfig.from_yaml()
+def get_config() -> AppConfig:
+    return AppConfig.instance()
+
+
+config = get_config()
