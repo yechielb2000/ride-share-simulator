@@ -34,7 +34,7 @@ class RedisClient:
                     cls._instance = cls(
                         host=config.redis.host,
                         port=config.redis.port,
-                        db=config.redis.db
+                        db=config.redis.db,
                     )
         return cls._instance
 
