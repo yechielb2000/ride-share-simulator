@@ -16,3 +16,38 @@ dependencies = [
     "redis>=6.4.0",
     "uvicorn>=0.35.0",
 ]
+
+[tool.ruff]
+line-length = 122
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]  # Enable all rules by default
+ignore = [
+    "D", # Ignore documentation warnings
+    "ANN", # Ignore type annotation warnings temporarily
+    "ERA", # Ignore commented-out code warnings
+    "ARG", # Ignore unused arguments warnings
+    "INP", # Ignore implicit namespace warnings
+    "T20", # Ignore print statements
+    "PLR0913", # Ignore too many arguments warning
+    "C416" # Ignore list comprehension warnings
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 122
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.11",
+]

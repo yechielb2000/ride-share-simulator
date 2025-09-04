@@ -6,9 +6,6 @@ from shared.logger import logger
 
 
 class RedisClock:
-    """
-    Shared simulation clock stored in Redis.
-    """
     KEY = "sim_clock"
 
     def __init__(self, pool: redis.ConnectionPool) -> None:
@@ -37,7 +34,6 @@ class RedisClock:
         return datetime.datetime.fromisoformat(ts)
 
     def advance(self, delta: datetime.timedelta) -> datetime.datetime | None:
-        """Atomically advance the clock by delta."""
         while True:
             try:
                 with self.client.pipeline() as pipe:

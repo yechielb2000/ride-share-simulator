@@ -1,19 +1,21 @@
 import threading
 from pathlib import Path
-from typing import Self
+from typing import ClassVar, Self
 
 import yaml
-from pydantic import PrivateAttr
 from pydantic_settings import BaseSettings
 
-from shared.config.clock import ClockConfig
-from shared.config.dispatcher import DispatcherConfig
-from shared.config.drivers_loader import DriverLoaderConfig
-from shared.config.metrics import MetricsConfig
-from shared.config.rides_producer import RidesProducerConfig
+from shared.config.services import (
+    ClockConfig,
+    DispatcherConfig,
+    DriverLoaderConfig,
+    MetricsConfig,
+    RidesProducerConfig,
+)
 from shared.logger import logger
 
 CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
+_config_lock = threading.Lock()
 
 
 class KafkaConfig(BaseSettings):
@@ -35,23 +37,29 @@ class AppConfig(BaseSettings):
     drivers_loader: DriverLoaderConfig
     clock: ClockConfig
 
-    _instance: Self = PrivateAttr(default=None)
-    _lock: threading.Lock = PrivateAttr(default_factory=threading.Lock)
+    _instance: ClassVar[Self | None] = None
+
+    @classmethod
+    def instance(cls) -> Self:
+        if cls._instance is None:
+            with _config_lock:
+                if cls._instance is None:
+                    cls._instance = cls.from_yaml()
+        return cls._instance
 
     @classmethod
     def reload_config(cls):
-        with cls._lock:
-            new_config = cls.from_yaml()
-            global config
-            config = new_config
+        with _config_lock:
+            cls._instance = cls.from_yaml()
             logger.info("Configuration reloaded successfully")
 
     @classmethod
     def from_yaml(cls, path: Path = CONFIG_PATH):
         if not path.exists():
-            raise FileNotFoundError(f"Config file not found: {path}")
+            msg = f"Config file not found: {path}"
+            raise FileNotFoundError(msg)
 
-        with open(path) as f:
+        with Path.open(path) as f:
             cfg = yaml.safe_load(f)
 
         return cls(
@@ -65,4 +73,4 @@ class AppConfig(BaseSettings):
         )
 
 
-config: AppConfig = AppConfig.from_yaml()
+config = AppConfig.instance()
