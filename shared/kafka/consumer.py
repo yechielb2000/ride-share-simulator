@@ -1,13 +1,16 @@
 from collections.abc import Generator
+from typing import TypeVar
 
 from confluent_kafka import Consumer, KafkaException
 from pydantic import BaseModel
 
 from shared.logger import logger
 
+T = TypeVar("T", bound=BaseModel)
+
 
 class KafkaConsumer:
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: BaseModel):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, model_cls: type[T]):
         self.consumer = Consumer({
             "bootstrap.servers": bootstrap_servers,
             "group.id": group_id,
@@ -16,7 +19,7 @@ class KafkaConsumer:
         self.consumer.subscribe([topic])
         self.model_cls = model_cls
 
-    def consume(self) -> Generator[BaseModel, None, None]:
+    def consume(self) -> Generator[T, None, None]:
         """
         Continuously yield Pydantic model objects of type T from Kafka.
         """
