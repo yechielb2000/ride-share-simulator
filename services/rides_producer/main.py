@@ -10,6 +10,11 @@ from shared.redis_sdk import redis_client
 
 
 def main():
+    """
+    Produce ride messages to the configured Kafka topic.
+    
+    Loads Ride objects from the configured JSON file, simulates per-ride delay using the configured simulation speed, assigns each ride a timestamp based on the Redis server clock plus a small random delta (5–20 seconds), and publishes the ride to the configured Kafka topic.
+    """
     ride_producer = KafkaProducer(config.kafka.bootstrap_servers, config.rides_producer.topic)
     for ride in load_models_from_json(config.rides_producer.json_file, "rides", Ride):
         # I do this only to simulate random requests ride time
